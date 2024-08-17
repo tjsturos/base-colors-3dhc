@@ -3,6 +3,7 @@ import csv
 from web3 import Web3
 import time
 import json
+import os
 
 def can_condense_hex(hex_color):
     return (hex_color[0] == hex_color[1] and 
@@ -152,15 +153,20 @@ def main():
 
     print("\nWriting results to CSV files...")
     
-    # Write unminted colors to CSV
-    with open("unminted_colors.csv", "w", newline="") as csvfile:
+    # Create the public directory if it doesn't exist
+    public_dir = "public"
+    os.makedirs(public_dir, exist_ok=True)
+
+    # Write unminted colors to CSV in the public directory
+    unminted_colors_path = os.path.join(public_dir, "unminted_colors.csv")
+    with open(unminted_colors_path, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["HEX CODE", "Expanded HEX"])
         for color in sorted(unminted_colors):
             expanded_color = expand_color(color)
             writer.writerow([color, expanded_color])
 
-    # Write minted colors to CSV
+    # Write minted colors to CSV (remains in the current directory)
     with open("minted_colors.csv", "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["HEX CODE", "Transaction ID"])
@@ -168,7 +174,7 @@ def main():
             writer.writerow([color, transaction_id])
 
     print(f"Total unminted colors: {len(unminted_colors)}")
-    print("CSV file 'unminted_colors.csv' has been created.")
+    print(f"CSV file '{unminted_colors_path}' has been created.")
     print(f"Total minted colors: {len(minted_colors)}")
     print("CSV file 'minted_colors.csv' has been created.")
 
