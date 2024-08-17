@@ -4,6 +4,11 @@ from web3 import Web3
 import time
 import json
 import os
+import argparse
+
+def debug_print(*args, **kwargs):
+    if DEBUG:
+        print(*args, **kwargs)
 
 def can_condense_hex(hex_color):
     return (hex_color[0] == hex_color[1] and 
@@ -109,9 +114,9 @@ def get_minted_colors():
                     else:
                         pass
                 except Exception as e:
-                    print(f"Error processing log: {e}")
+                    debug_print(f"Error processing log: {e}")
 
-            # print(f"Processed blocks {current_block} to {params['toBlock']}, total logs: {total_logs}, unique colors: {len(minted_colors)}, condensed colors: {len(condensed_colors)}")
+            debug_print(f"Processed blocks {current_block} to {params['toBlock']}, total logs: {total_logs}, unique colors: {len(minted_colors)}, condensed colors: {len(condensed_colors)}")
             
             last_block = int(data["result"][-1]["blockNumber"], 16)
             if current_block >= last_block:
@@ -120,38 +125,45 @@ def get_minted_colors():
 
             time.sleep(0.2)
 
-    print("\nUnique event names encountered:")
+    debug_print("\nUnique event names encountered:")
     for event_name in sorted(unique_event_names):
-        print(f"- {event_name}")
+        debug_print(f"- {event_name}")
 
     return minted_colors, condensed_colors
 
 def main():
-    print("Fetching minted colors...")
-    minted_colors, condensed_colors = get_minted_colors()
-    print(f"Found {len(minted_colors)} minted colors and {len(condensed_colors)} condensed colors.")
+    parser = argparse.ArgumentParser(description="Fetch and process minted colors.")
+    parser.add_argument("--debug", action="store_true", help="Enable debug output")
+    args = parser.parse_args()
 
-    print("Generating all possible condensable colors...")
+    global DEBUG
+    DEBUG = args.debug
+
+    debug_print("Fetching minted colors...")
+    minted_colors, condensed_colors = get_minted_colors()
+    debug_print(f"Found {len(minted_colors)} minted colors and {len(condensed_colors)} condensed colors.")
+
+    debug_print("Generating all possible condensable colors...")
     all_colors = set(f"#{r:01X}{g:01X}{b:01X}" for r in range(16) for g in range(16) for b in range(16))
-    print(f"Total possible colors: {len(all_colors)}")
-    print("Calculating unminted colors...")
+    debug_print(f"Total possible colors: {len(all_colors)}")
+    debug_print("Calculating unminted colors...")
     unminted_colors = all_colors - set(condensed_colors.keys())
 
-    print("\nComparisons:")
-    print(f"Total possible colors: {len(all_colors)}")
-    print(f"Minted colors: {len(minted_colors)}")
-    print(f"Unminted colors: {len(unminted_colors)}")
+    debug_print("\nComparisons:")
+    debug_print(f"Total possible colors: {len(all_colors)}")
+    debug_print(f"Minted colors: {len(minted_colors)}")
+    debug_print(f"Unminted colors: {len(unminted_colors)}")
     
-    print(f"\nPercentage minted: {(len(minted_colors) / len(all_colors)) * 100:.2f}%")
-    print(f"Percentage unminted: {(len(unminted_colors) / len(all_colors)) * 100:.2f}%")
+    debug_print(f"\nPercentage minted: {(len(minted_colors) / len(all_colors)) * 100:.2f}%")
+    debug_print(f"Percentage unminted: {(len(unminted_colors) / len(all_colors)) * 100:.2f}%")
 
     # Check if #000000 is minted
     if "#000000" in minted_colors:
-        print("\n#000000 is minted")
+        debug_print("\n#000000 is minted")
     else:
-        print("\n#000000 is not minted")
+        debug_print("\n#000000 is not minted")
 
-    print("\nWriting results to CSV files...")
+    debug_print("\nWriting results to CSV files...")
     
     # Create the public directory if it doesn't exist
     public_dir = "public"
@@ -173,10 +185,10 @@ def main():
         for color, transaction_id in sorted(minted_colors.items()):
             writer.writerow([color, transaction_id])
 
-    print(f"Total unminted colors: {len(unminted_colors)}")
-    print(f"CSV file '{unminted_colors_path}' has been created.")
-    print(f"Total minted colors: {len(minted_colors)}")
-    print("CSV file 'minted_colors.csv' has been created.")
+    debug_print(f"Total unminted colors: {len(unminted_colors)}")
+    debug_print(f"CSV file '{unminted_colors_path}' has been created.")
+    debug_print(f"Total minted colors: {len(minted_colors)}")
+    debug_print("CSV file 'minted_colors.csv' has been created.")
 
 if __name__ == "__main__":
     main()
