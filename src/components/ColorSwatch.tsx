@@ -31,7 +31,7 @@ const ColorSwatch: React.FC<ColorSwatchProps> = ({ address, color, onView }) => 
         View
       </button>
       {address ? (
-        <TransactionWrapper address={address} color={color} />
+        <TransactionWrapper address={address} color={color} className="w-full" />
       ) : (
         <WalletWrapper
           className="w-20"
