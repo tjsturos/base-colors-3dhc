@@ -16,6 +16,9 @@ function getRelativeTime(date: Date): string {
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
     try {
+      // Set cache control headers
+      res.setHeader('Cache-Control', 'public, s-maxage=180, stale-while-revalidate=30');
+
       const filePath = path.join(process.cwd(), 'public', 'unminted_colors.csv');
       const fileContent = fs.readFileSync(filePath, 'utf-8');
       const stats = fs.statSync(filePath);
