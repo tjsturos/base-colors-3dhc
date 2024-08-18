@@ -16,6 +16,7 @@ const pressStart2P = Press_Start_2P({
 export default function Header() {
   const { address } = useAccount();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [randomSwatchCount, setRandomSwatchCount] = useState(10);
 
   return (
     <header className="w-full bg-gray-100 py-4 px-6">
@@ -38,7 +39,13 @@ export default function Header() {
           {!address && <LoginButton />}
         </div>
       </div>
-      {isSettingsOpen && <Settings onClose={() => setIsSettingsOpen(false)} />}
+      {isSettingsOpen && (
+        <Settings 
+          onClose={() => setIsSettingsOpen(false)}
+          randomSwatchCount={randomSwatchCount}
+          setRandomSwatchCount={setRandomSwatchCount}
+        />
+      )}
     </header>
   );
 }
