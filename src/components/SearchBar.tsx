@@ -11,7 +11,8 @@ interface SearchBarProps {
   randomCount: number;
   onUpdateQuantity: () => void;
   onClearSearch: () => Promise<void>;
-  isLoading: boolean; // Added isLoading prop
+  isLoading: boolean;
+  noSearchResults: boolean;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
@@ -23,7 +24,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
   randomCount,
   onUpdateQuantity,
   onClearSearch,
-  isLoading, // Destructure isLoading prop
+  isLoading,
+  noSearchResults,
 }) => {
   const { randomSwatchCount } = useSettings();
 

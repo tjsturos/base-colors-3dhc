@@ -3,7 +3,7 @@ import Footer from 'src/components/Footer';
 import { useAccount } from 'wagmi';
 import ColorSwatch from '../components/ColorSwatch';
 import TransactionWrapper from '../components/TransactionWrapper';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import WalletWrapper from 'src/components/WalletWrapper';
 import SearchBar from 'src/components/SearchBar';
 import Settings from '../components/Settings';
@@ -37,6 +37,8 @@ export default function Page() {
   const [isLoadingRandom, setIsLoadingRandom] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [noSearchResults, setNoSearchResults] = useState(false);
+  const [randomColor, setRandomColor] = useState<Color | null>(null);
 
   useEffect(() => {
     // Fetch colors from API
@@ -65,6 +67,14 @@ export default function Page() {
         color.expandedHex.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredColors(filtered);
+      setNoSearchResults(filtered.length === 0);
+      
+      // If no results, set a random color
+      if (filtered.length === 0 && colors.length > 0) {
+        setRandomColor(colors[Math.floor(Math.random() * colors.length)]);
+      } else {
+        setRandomColor(null);
+      }
     }
   }, [searchTerm, colors, isRandomMode]);
 
@@ -169,6 +179,7 @@ export default function Page() {
           onUpdateQuantity={handleUpdateQuantity}
           onClearSearch={handleClearSearch}
           isLoading={isLoading}
+          noSearchResults={noSearchResults}
         />
         
         {isLoading || !isLoadingComplete ? (
@@ -176,17 +187,24 @@ export default function Page() {
             <LoadingSpinner />
           </div>
         ) : (
-          <div className="grid grid-cols-2 w-full sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-            {filteredColors.map((color) => (
-              <div key={color.hexCode} className="bg-gray-100 p-5 rounded-xl">
-                <ColorSwatch 
-                  color={color} 
-                  address={address!} 
-                  onView={() => openModal(color)}
-                />
-              </div>
-            ))}
-          </div>
+          <>
+            {noSearchResults && randomColor && (
+              <p className="text-gray-600 mb-4 text-center">
+                No search results found. But here's a random color:
+              </p>
+            )}
+            <div className={`w-full ${(noSearchResults && randomColor) || filteredColors.length === 1 ? 'flex justify-center' : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6'}`}>
+              {(noSearchResults && randomColor ? [randomColor] : filteredColors).map((color) => (
+                <div key={color.hexCode} className="bg-gray-100 p-5 rounded-xl">
+                  <ColorSwatch 
+                    color={color} 
+                    address={address!} 
+                    onView={() => openModal(color)}
+                  />
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </section>
       <Footer />
