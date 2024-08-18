@@ -4,10 +4,12 @@ import { useSettings } from '../contexts/SettingsContext';
 
 interface SettingsProps {
   onClose: () => void;
+  randomSwatchCount: number;
+  setRandomSwatchCount: (count: number) => void;
 }
 
-export default function Settings({ onClose }: SettingsProps) {
-  const { randomSwatchCount, setRandomSwatchCount, recipientAddress, setRecipientAddress, clearRecipientAddress } = useSettings();
+export default function Settings({ onClose, randomSwatchCount, setRandomSwatchCount }: SettingsProps) {
+  const { recipientAddress, setRecipientAddress, clearRecipientAddress } = useSettings();
   const [localSwatchCount, setLocalSwatchCount] = useState(randomSwatchCount);
   const [recipient, setRecipient] = useState(recipientAddress || '');
   const [error, setError] = useState('');
