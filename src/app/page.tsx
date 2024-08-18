@@ -8,6 +8,14 @@ import WalletWrapper from 'src/components/WalletWrapper';
 import SearchBar from 'src/components/SearchBar';
 import Settings from '../components/Settings';
 import { useSettings } from '../contexts/SettingsContext';
+import LoadingSpinner from 'src/components/LoadingSpinner'; 
+import { Press_Start_2P } from 'next/font/google';
+
+const pressStart2P = Press_Start_2P({ 
+  weight: '400',
+  subsets: ['latin'],
+  display: 'swap',
+});
 
 interface Color {
   hexCode: string;
@@ -16,7 +24,7 @@ interface Color {
 
 export default function Page() {
   const { address } = useAccount();
-  const { recipientAddress, clearRecipientAddress } = useSettings();
+  const { recipientAddress, clearRecipientAddress, randomSwatchCount, setRandomSwatchCount } = useSettings();
   const [colors, setColors] = useState<Color[]>([]);
   const [filteredColors, setFilteredColors] = useState<Color[]>([]);
   const [selectedColor, setSelectedColor] = useState<Color | null>(null);
@@ -25,9 +33,10 @@ export default function Page() {
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [relativeTime, setRelativeTime] = useState<string | null>(null);
   const [isLoadingComplete, setIsLoadingComplete] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const { randomSwatchCount } = useSettings();
   const [isRandomMode, setIsRandomMode] = useState(false);
+  const [isLoadingRandom, setIsLoadingRandom] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // Fetch colors from API
@@ -59,6 +68,23 @@ export default function Page() {
     }
   }, [searchTerm, colors, isRandomMode]);
 
+  useEffect(() => {
+    if (isLoadingRandom && colors.length > 0) {
+      const timer = setTimeout(() => {
+        const randomIndexes = new Set<number>();
+        while (randomIndexes.size < randomSwatchCount) {
+          randomIndexes.add(Math.floor(Math.random() * colors.length));
+        }
+        const randomColors = Array.from(randomIndexes).map(index => colors[index]);
+        setFilteredColors(randomColors);
+        setIsRandomMode(true);
+        setIsLoadingRandom(false);
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isLoadingRandom, colors, randomSwatchCount]);
+
   const openModal = (color: Color) => {
     setSelectedColor(color);
     setIsModalOpen(true);
@@ -70,33 +96,15 @@ export default function Page() {
   };
 
   const handleRandomColor = useCallback(() => {
-    if (colors.length > 0) {
-      const randomIndexes = new Set<number>();
-      while (randomIndexes.size < randomSwatchCount) {
-        randomIndexes.add(Math.floor(Math.random() * colors.length));
-      }
-      const randomColors = Array.from(randomIndexes).map(index => colors[index]);
-      setFilteredColors(randomColors);
-      setIsRandomMode(true);
-      setSearchTerm('');
-    }
-  }, [colors, randomSwatchCount]);
+    setIsLoadingRandom(true);
+    setFilteredColors([]);
+    setSearchTerm('');
+  }, []);
 
   const handleClearRandom = () => {
     setFilteredColors(colors);
     setIsRandomMode(false);
     setSearchTerm('');
-  };
-
-  const handleMint = (color: Color) => {
-    if (recipientAddress) {
-      const confirmMessage = `Are you sure you want to mint this color to ${recipientAddress}?`;
-      if (window.confirm(confirmMessage)) {
-        openModal(color);
-      }
-    } else {
-      openModal(color);
-    }
   };
 
   const openSettings = () => {
@@ -105,6 +113,21 @@ export default function Page() {
 
   const closeSettings = () => {
     setIsSettingsOpen(false);
+    if (isRandomMode) {
+      handleRandomColor();
+    }
+  };
+
+  const handleUpdateQuantity = () => {
+    setIsSettingsOpen(true);
+  };
+
+  const handleClearSearch = async () => {
+    setIsLoading(true);
+    setSearchTerm('');
+    // Perform your clear search logic here
+    // If you need to fetch new data or update the filteredColors, do it here
+    setIsLoading(false);
   };
 
   return (
@@ -125,7 +148,7 @@ export default function Page() {
               className="text-sm text-blue-600 cursor-pointer hover:underline mr-2"
               onClick={openSettings}
             >
-              Sending Mint to: {recipientAddress}
+              Sending Mint(s) to: {recipientAddress}
             </p>
             <button
               onClick={clearRecipientAddress}
@@ -143,30 +166,46 @@ export default function Page() {
           isRandomMode={isRandomMode}
           onClearRandom={handleClearRandom}
           randomCount={filteredColors.length}
+          onUpdateQuantity={handleUpdateQuantity}
+          onClearSearch={handleClearSearch}
+          isLoading={isLoading}
         />
-        <div className="grid grid-cols-2 w-full sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-          {filteredColors.map((color) => (
-            <div key={color.hexCode} className="bg-gray-100 p-5 rounded-xl">
-              <ColorSwatch 
-                color={color} 
-                address={address!} 
-                onView={() => handleMint(color)}
-              />
-            </div>
-          ))}
-        </div>
+        
+        {isLoading || !isLoadingComplete ? (
+          <div className="flex justify-center items-center h-64">
+            <LoadingSpinner />
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 w-full sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+            {filteredColors.map((color) => (
+              <div key={color.hexCode} className="bg-gray-100 p-5 rounded-xl">
+                <ColorSwatch 
+                  color={color} 
+                  address={address!} 
+                  onView={() => openModal(color)}
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </section>
       <Footer />
 
       {isModalOpen && selectedColor && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white p-6 rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
+          onClick={closeModal} // Close modal when clicking on the overlay
+        >
+          <div 
+            className="bg-white p-6 rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the modal
+          >
             <div 
               className="w-full aspect-square rounded-xl shadow-lg mb-4" 
               style={{ backgroundColor: selectedColor.hexCode }}
             ></div>
             <div className="text-center mb-4">
-              <h2 className="text-2xl font-bold">{selectedColor.hexCode}</h2>
+              <h2 className={`text-2xl font-bold ${pressStart2P.className}`}>{selectedColor.hexCode.replace('#', '')}</h2>
               <p className="text-lg mt-2">{selectedColor.expandedHex}</p>
             </div>
             <div className="mb-1 w-full modal-button-override">
@@ -188,6 +227,8 @@ export default function Page() {
       {isSettingsOpen && (
         <Settings
           onClose={closeSettings}
+          randomSwatchCount={randomSwatchCount}
+          setRandomSwatchCount={setRandomSwatchCount}
         />
       )}
     </div>

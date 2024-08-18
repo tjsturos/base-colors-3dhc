@@ -1,18 +1,21 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
-import { useSettings } from 'src/contexts/SettingsContext';
+import { useSettings } from '../contexts/SettingsContext';
 
 interface SettingsProps {
   onClose: () => void;
 }
 
 export default function Settings({ onClose }: SettingsProps) {
-  const { recipientAddress, setRecipientAddress, clearRecipientAddress } = useSettings();
-  const { randomSwatchCount, setRandomSwatchCount } = useSettings();
+  const { randomSwatchCount, setRandomSwatchCount, recipientAddress, setRecipientAddress, clearRecipientAddress } = useSettings();
+  const [localSwatchCount, setLocalSwatchCount] = useState(randomSwatchCount);
   const [recipient, setRecipient] = useState(recipientAddress || '');
   const [error, setError] = useState('');
-  const [swatchCount, setSwatchCount] = useState(randomSwatchCount);
   const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setLocalSwatchCount(randomSwatchCount);
+  }, [randomSwatchCount]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -32,13 +35,15 @@ export default function Settings({ onClose }: SettingsProps) {
   };
 
   const handleSave = () => {
+    if (localSwatchCount > 0) {
+      setRandomSwatchCount(localSwatchCount);
+    }
     if (recipient && !isValidEthereumAddress(recipient)) {
       setError('Please enter a valid Ethereum address');
       return;
     }
 
     setRecipientAddress(recipient || null);
-    setRandomSwatchCount(swatchCount);
     onClose();
   };
 
@@ -51,6 +56,13 @@ export default function Settings({ onClose }: SettingsProps) {
     setRecipient('');
     clearRecipientAddress();
     setError('');
+  };
+
+  const handleRandomSwatchCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const count = parseInt(e.target.value, 10);
+    if (!isNaN(count) && count > 0) {
+      setLocalSwatchCount(count);
+    }
   };
 
   return (
@@ -82,28 +94,28 @@ export default function Settings({ onClose }: SettingsProps) {
           {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
         </div>
         <div className="mb-4">
-          <label className="block mb-2">
-            Random Swatch Count:
-            <input
-              type="number"
-              value={swatchCount}
-              onChange={(e) => setSwatchCount(Number(e.target.value))}
-              className="w-full p-2 border rounded mt-1"
-              min="1"
-              max="100"
-            />
+          <label htmlFor="randomSwatchCount" className="block text-sm font-medium text-gray-700">
+            Random Swatch Count
           </label>
+          <input
+            type="number"
+            id="randomSwatchCount"
+            value={localSwatchCount}
+            onChange={handleRandomSwatchCountChange}
+            min="1"
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+          />
         </div>
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end space-x-2">
           <button
             onClick={onClose}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-xl mr-2"
+            className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-xl"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-xl"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl"
           >
             Save
           </button>

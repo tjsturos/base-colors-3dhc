@@ -33,7 +33,10 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
     }
     const savedSwatchCount = localStorage.getItem('randomSwatchCount');
     if (savedSwatchCount) {
-      setRandomSwatchCount(parseInt(savedSwatchCount, 10));
+      const count = parseInt(savedSwatchCount, 10);
+      if (!isNaN(count) && count > 0) {
+        setRandomSwatchCount(count);
+      }
     }
   }, []);
 
@@ -55,7 +58,11 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
 
   const value = {
     randomSwatchCount,
-    setRandomSwatchCount,
+    setRandomSwatchCount: (count: number) => {
+      if (count > 0) {
+        setRandomSwatchCount(count);
+      }
+    },
     recipientAddress,
     setRecipientAddress,
     clearRecipientAddress,

@@ -90,10 +90,10 @@ export default function RootLayout({
                 style={{ backgroundColor: currentColor }}
               ></div>
               <div className="flex flex-col items-center">
-                <h2 className="text-2xl font-bold font-sans" style={{ color: currentColor }}>
+                <h2 className="text-2xl font-bold font-sans text-black">
                   Base Colors
                 </h2>
-                <span className={`text-xl mt-1 ${pressStart2P.className}`} style={{ color: currentColor }}>
+                <span className={`text-xl mt-1 ${pressStart2P.className} text-black`}>
                   Abbr Swatches
                 </span>
               </div>
