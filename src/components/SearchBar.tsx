@@ -38,13 +38,13 @@ const SearchBar: React.FC<SearchBarProps> = ({
         </button>
       </div>
       {isRandomMode && (
-        <div className="mt-2 flex items-center justify-between">
+        <div className="mt-2 flex items-center justify-center">
           <p className="text-sm text-gray-600">
             Showing {randomCount} Random Swatches
           </p>
           <button
             onClick={onClearRandom}
-            className="text-red-500 hover:text-red-700"
+            className="text-red-500 hover:text-red-700 ml-2 text-sm"
           >
             Clear
           </button>
