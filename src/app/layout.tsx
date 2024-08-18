@@ -89,10 +89,13 @@ export default function RootLayout({
                 className="loading-swatch rounded-xl shadow-lg w-32 h-32 mb-4"
                 style={{ backgroundColor: currentColor }}
               ></div>
-              <div className={pressStart2P.className}>
-                <h2 className="text-2xl text-center" style={{ color: currentColor }}>
+              <div className="flex flex-col items-center">
+                <h2 className="text-2xl font-bold font-sans" style={{ color: currentColor }}>
                   Base Colors
                 </h2>
+                <span className={`text-xl mt-1 ${pressStart2P.className}`} style={{ color: currentColor }}>
+                  Abbr Swatches
+                </span>
               </div>
             </div>
           )}
