@@ -23,6 +23,7 @@ export default function Page() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const [relativeTime, setRelativeTime] = useState<string | null>(null);
   const [isLoadingComplete, setIsLoadingComplete] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { randomSwatchCount } = useSettings();
@@ -37,6 +38,7 @@ export default function Page() {
         setColors(data.colors);
         setFilteredColors(data.colors);
         setLastUpdated(new Date(data.lastModified).toLocaleString());
+        setRelativeTime(data.relativeTime);
       } catch (error) {
         console.error('Error fetching colors:', error);
       } finally {
@@ -114,8 +116,8 @@ export default function Page() {
       data-loading-complete={isLoadingComplete.toString()}
     >
       <section className="templateSection flex w-full flex-col items-center justify-center gap-4 px-2  md:grow">
-        {lastUpdated && (
-          <p className="text-sm text-gray-600 my-4">List Last updated: {lastUpdated}</p>
+        {relativeTime && (
+          <p className="text-sm text-gray-600 my-4">List last updated: {relativeTime}</p>
         )}
         {recipientAddress && (
           <div className="flex items-center mb-4">
