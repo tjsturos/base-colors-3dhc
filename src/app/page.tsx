@@ -1,12 +1,13 @@
 'use client';
 import Footer from 'src/components/Footer';
 import { useAccount } from 'wagmi';
-import LoginButton from '../components/LoginButton';
-import SignupButton from '../components/SignupButton';
 import ColorSwatch from '../components/ColorSwatch';
 import TransactionWrapper from '../components/TransactionWrapper';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import WalletWrapper from 'src/components/WalletWrapper';
+import SearchBar from 'src/components/SearchBar';
+import Settings from '../components/Settings';
+import { useSettings } from '../contexts/SettingsContext';
 
 interface Color {
   hexCode: string;
@@ -15,33 +16,46 @@ interface Color {
 
 export default function Page() {
   const { address } = useAccount();
+  const { recipientAddress, clearRecipientAddress } = useSettings();
   const [colors, setColors] = useState<Color[]>([]);
   const [filteredColors, setFilteredColors] = useState<Color[]>([]);
   const [selectedColor, setSelectedColor] = useState<Color | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const [isLoadingComplete, setIsLoadingComplete] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const { randomSwatchCount } = useSettings();
+  const [isRandomMode, setIsRandomMode] = useState(false);
 
   useEffect(() => {
     // Fetch colors from API
     const fetchColors = async () => {
-      const response = await fetch('/api/colors');
-      const data = await response.json();
-      setColors(data.colors);
-      setFilteredColors(data.colors);
-      setLastUpdated(new Date(data.lastModified).toLocaleString());
+      try {
+        const response = await fetch('/api/colors');
+        const data = await response.json();
+        setColors(data.colors);
+        setFilteredColors(data.colors);
+        setLastUpdated(new Date(data.lastModified).toLocaleString());
+      } catch (error) {
+        console.error('Error fetching colors:', error);
+      } finally {
+        setIsLoadingComplete(true);
+      }
     };
 
     fetchColors();
   }, []);
 
   useEffect(() => {
-    const filtered = colors.filter(color => 
-      color.hexCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      color.expandedHex.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredColors(filtered);
-  }, [searchTerm, colors]);
+    if (!isRandomMode) {
+      const filtered = colors.filter(color => 
+        color.hexCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        color.expandedHex.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredColors(filtered);
+    }
+  }, [searchTerm, colors, isRandomMode]);
 
   const openModal = (color: Color) => {
     setSelectedColor(color);
@@ -53,26 +67,80 @@ export default function Page() {
     setIsModalOpen(false);
   };
 
+  const handleRandomColor = useCallback(() => {
+    if (colors.length > 0) {
+      const randomIndexes = new Set<number>();
+      while (randomIndexes.size < randomSwatchCount) {
+        randomIndexes.add(Math.floor(Math.random() * colors.length));
+      }
+      const randomColors = Array.from(randomIndexes).map(index => colors[index]);
+      setFilteredColors(randomColors);
+      setIsRandomMode(true);
+      setSearchTerm('');
+    }
+  }, [colors, randomSwatchCount]);
+
+  const handleClearRandom = () => {
+    setFilteredColors(colors);
+    setIsRandomMode(false);
+    setSearchTerm('');
+  };
+
+  const handleMint = (color: Color) => {
+    if (recipientAddress) {
+      const confirmMessage = `Are you sure you want to mint this color to ${recipientAddress}?`;
+      if (window.confirm(confirmMessage)) {
+        openModal(color);
+      }
+    } else {
+      openModal(color);
+    }
+  };
+
+  const openSettings = () => {
+    setIsSettingsOpen(true);
+  };
+
+  const closeSettings = () => {
+    setIsSettingsOpen(false);
+  };
+
   return (
-    <div className="flex h-full w-96 max-w-full flex-col px-1 md:w-[1008px]">
-      <section className="mt-6 mb-6 flex w-full flex-col md:flex-row">
-        <div className="flex w-full flex-row items-center justify-between gap-2 md:gap-0">
-          <div className="flex items-center gap-3">
-            <SignupButton />
-            {!address && <LoginButton />}
-          </div>
-        </div>
-      </section>
-      {lastUpdated && (
-        <p className="text-sm text-gray-600 mb-4">Last updated: {lastUpdated}</p>
-      )}
+    <div 
+      className="flex h-full w-96 max-w-full flex-col px-1 md:w-[1008px] relative"
+      style={{
+        backgroundColor: 'transparent',
+      }}
+      data-loading-complete={isLoadingComplete.toString()}
+    >
       <section className="templateSection flex w-full flex-col items-center justify-center gap-4 px-2  md:grow">
-        <input
-          type="text"
-          placeholder="Search colors..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded-xl"
+        {lastUpdated && (
+          <p className="text-sm text-gray-600 my-4">List Last updated: {lastUpdated}</p>
+        )}
+        {recipientAddress && (
+          <div className="flex items-center mb-4">
+            <p 
+              className="text-sm text-blue-600 cursor-pointer hover:underline mr-2"
+              onClick={openSettings}
+            >
+              Sending Mint to: {recipientAddress}
+            </p>
+            <button
+              onClick={clearRecipientAddress}
+              className="text-red-500 hover:text-red-700"
+              aria-label="Clear recipient address"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+        <SearchBar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          onRandomClick={handleRandomColor}
+          isRandomMode={isRandomMode}
+          onClearRandom={handleClearRandom}
+          randomCount={filteredColors.length}
         />
         <div className="grid grid-cols-2 w-full sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {filteredColors.map((color) => (
@@ -80,7 +148,7 @@ export default function Page() {
               <ColorSwatch 
                 color={color} 
                 address={address!} 
-                onView={() => openModal(color)}
+                onView={() => handleMint(color)}
               />
             </div>
           ))}
@@ -99,10 +167,10 @@ export default function Page() {
               <h2 className="text-2xl font-bold">{selectedColor.hexCode}</h2>
               <p className="text-lg mt-2">{selectedColor.expandedHex}</p>
             </div>
-            <div className="mb-1">
+            <div className="mb-1 w-full modal-button-override">
               {address 
                 ? (<TransactionWrapper address={address!} color={selectedColor} className="w-full" />) 
-                : (<WalletWrapper className="w-full" text="Mint" />)
+                : (<WalletWrapper className="w-full" text="Log in" />)
               }
             </div>
             <button 
@@ -113,6 +181,12 @@ export default function Page() {
             </button>
           </div>
         </div>
+      )}
+
+      {isSettingsOpen && (
+        <Settings
+          onClose={closeSettings}
+        />
       )}
     </div>
   );

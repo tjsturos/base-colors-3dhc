@@ -1,4 +1,5 @@
 'use client';
+import React, { useState, useEffect } from 'react';
 import {
   Transaction,
   TransactionButton,
@@ -17,6 +18,7 @@ import {
   mintABI,
   mintContractAddress,
 } from '../constants';
+
 interface Color {
   hexCode: string;
   expandedHex: string;
@@ -33,12 +35,22 @@ export default function TransactionWrapper({
   color,
   className,
 }: TransactionWrapperParams) {
+  const [recipient, setRecipient] = useState<Address>(address);
+  const [isConfirmed, setIsConfirmed] = useState(false);
+
+  useEffect(() => {
+    const savedRecipient = localStorage.getItem('recipientAddress');
+    if (savedRecipient) {
+      setRecipient(savedRecipient as Address);
+    }
+  }, []);
+
   const contracts = [
     {
       address: mintContractAddress,
       abi: mintABI,
       functionName: 'mint',
-      args: [ color.expandedHex , color.expandedHex , address ],
+      args: [color.expandedHex, color.expandedHex, recipient],
     },
   ] as unknown as ContractFunctionParameters[];
 
@@ -50,17 +62,37 @@ export default function TransactionWrapper({
     console.log('Transaction successful', response);
   };
 
+  const handleConfirmation = () => {
+    const confirmMessage = `Are you sure you want to mint this color (${color.hexCode}) to ${recipient}?`;
+    if (window.confirm(confirmMessage)) {
+      setIsConfirmed(true);
+    }
+  };
+
+  if (!isConfirmed && recipient !== address) {
+    return (
+      <div className={`flex w-full ${className}`}>
+        <button
+          onClick={handleConfirmation}
+          className="mt-0 w-full text-white bg-blue-500 hover:bg-blue-600 py-2 px-4 rounded-xl"
+        >
+          Confirm Mint
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className={`flex w-20 ${className}`}>
+    <div className={`flex w-full ${className}`}>
       <Transaction
         address={address}
         contracts={contracts}
-        className="w-20"
+        className="w-full"
         chainId={process.env.NODE_ENV === 'development' ? BASE_SEPOLIA_CHAIN_ID : BASE_MAINNET_CHAIN_ID}
         onError={handleError}
         onSuccess={handleSuccess}
       >
-        <TransactionButton className="mt-0 mr-auto ml-auto max-w-full text-[white]" text="Mint" />
+        <TransactionButton className="mt-0 w-full text-[white] flex-grow" text="Mint" />
         <TransactionStatus>
           <TransactionStatusLabel />
           <TransactionStatusAction />

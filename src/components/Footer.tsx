@@ -1,10 +1,8 @@
 'use client';
 
 import {
-  
   WARPCAST_LINK,
 } from 'src/links';
-import ArrowSvg from 'src/svg/ArrowSvg';
 
 
 

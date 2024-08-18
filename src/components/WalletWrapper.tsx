@@ -25,29 +25,27 @@ export default function WalletWrapper({
   withWalletAggregator = false,
 }: WalletWrapperParams) {
   return (
-    <>
-      <Wallet>
-        <ConnectWallet
-          withWalletAggregator={withWalletAggregator}
-          text={text}
-          className={className}
-        >
-          <Avatar className="h-6 w-6" />
+    <Wallet>
+      <ConnectWallet
+        withWalletAggregator={withWalletAggregator}
+        text={text}
+        className={`w-full flex-grow ${className}`}
+      >
+        <Avatar className="h-6 w-6" />
+        <Name />
+      </ConnectWallet>
+      <WalletDropdown>
+        <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick={true}>
+          <Avatar />
           <Name />
-        </ConnectWallet>
-        <WalletDropdown>
-          <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick={true}>
-            <Avatar />
-            <Name />
-            <Address />
-            <EthBalance />
-          </Identity>
-          <WalletDropdownLink icon="wallet" href="https://wallet.coinbase.com">
-            Go to Wallet Dashboard
-          </WalletDropdownLink>
-          <WalletDropdownDisconnect />
-        </WalletDropdown>
-      </Wallet>
-    </>
+          <Address />
+          <EthBalance />
+        </Identity>
+        <WalletDropdownLink icon="wallet" href="https://wallet.coinbase.com">
+          Go to Wallet Dashboard
+        </WalletDropdownLink>
+        <WalletDropdownDisconnect />
+      </WalletDropdown>
+    </Wallet>
   );
 }
