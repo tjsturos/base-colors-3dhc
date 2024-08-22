@@ -8,6 +8,8 @@ import dynamic from 'next/dynamic';
 import Header from '../components/Header';
 import { Press_Start_2P } from 'next/font/google';
 import { SettingsProvider } from '../contexts/SettingsContext';
+import { CartProvider } from '../contexts/CartContext';
+import MintCart from '../components/MintCart';
 
 const pressStart2P = Press_Start_2P({ 
   weight: '400',
@@ -69,14 +71,16 @@ export default function RootLayout({
       </head>
       <body className="flex flex-col min-h-screen bg-[#fafafa]">
         <SettingsProvider>
-          <OnchainProviders>
-            <Header />
-            <main className="flex-grow flex items-center justify-center">
-              {children}
-            </main>
-          </OnchainProviders>
-          {/* Loading overlay */}
-          {!isLoadingComplete && isClient && (
+          <CartProvider>
+            <OnchainProviders>
+              <Header />
+              <main className="flex-grow flex items-center justify-center">
+                {children}
+              </main>
+              <MintCart />
+            </OnchainProviders>
+            {/* Loading overlay */}
+            {!isLoadingComplete && isClient && (
             <div 
               className="fixed inset-0 z-50 flex flex-col items-center justify-center transition-opacity duration-500"
               style={{
@@ -94,13 +98,14 @@ export default function RootLayout({
                   Base Colors
                 </h2>
                 <span className={`text-xl mt-1 ${pressStart2P.className} text-black`}>
-                  Abbr Swatches
+                  3DHC
                 </span>
               </div>
             </div>
           )}
-        </SettingsProvider>
-      </body>
-    </html>
+        </CartProvider>
+      </SettingsProvider>
+    </body>
+  </html>
   );
 }

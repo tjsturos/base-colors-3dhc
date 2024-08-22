@@ -13,17 +13,26 @@ import {
   WalletDropdownDisconnect,
   WalletDropdownLink,
 } from '@coinbase/onchainkit/wallet';
+import { useState } from 'react';
+import Settings from 'src/components/Settings';
 
 type WalletWrapperParams = {
   text?: string;
   className?: string;
   withWalletAggregator?: boolean;
+  randomSwatchCount: number;
+  setRandomSwatchCount: (count: number) => void;
 };
+
 export default function WalletWrapper({
   className,
   text,
   withWalletAggregator = false,
+  randomSwatchCount,
+  setRandomSwatchCount,
 }: WalletWrapperParams) {
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
   return (
     <Wallet>
       <ConnectWallet

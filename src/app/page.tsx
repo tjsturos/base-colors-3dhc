@@ -10,6 +10,7 @@ import Settings from '../components/Settings';
 import { useSettings } from '../contexts/SettingsContext';
 import LoadingSpinner from 'src/components/LoadingSpinner'; 
 import { Press_Start_2P } from 'next/font/google';
+import SettingsIcon from 'src/components/SettingsIcon';
 
 const pressStart2P = Press_Start_2P({ 
   weight: '400',
@@ -150,7 +151,16 @@ export default function Page() {
     >
       <section className="templateSection flex w-full flex-col items-center justify-center gap-4 px-2  md:grow">
         {relativeTime && (
-          <p className="text-sm text-gray-600 my-4">List last updated: {relativeTime}</p>
+          <div className="flex items-center justify-between w-full">
+            <p className="text-sm text-gray-600 my-4">List last updated: {relativeTime}</p>
+            <button
+              onClick={openSettings}
+              className="flex items-center text-sm text-blue-600 hover:text-blue-800"
+            >
+              <SettingsIcon className="w-4 h-4 mr-1" />
+              Settings
+            </button>
+          </div>
         )}
         {recipientAddress && (
           <div className="flex items-center mb-4">
@@ -229,7 +239,12 @@ export default function Page() {
             <div className="mb-1 w-full modal-button-override">
               {address 
                 ? (<TransactionWrapper address={address!} color={selectedColor} className="w-full" />) 
-                : (<WalletWrapper className="w-full" text="Log in" />)
+                : (<WalletWrapper 
+                    className="w-full" 
+                    text="Log in" 
+                    randomSwatchCount={randomSwatchCount}
+                    setRandomSwatchCount={setRandomSwatchCount}
+                  />)
               }
             </div>
             <button 
