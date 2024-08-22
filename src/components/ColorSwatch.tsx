@@ -18,10 +18,11 @@ interface Color {
 
 interface ColorSwatchProps {
   color: Color;
-  address: Address;
+  address: `0x${string}`;
+  onView: () => void;
 }
 
-const ColorSwatch: React.FC<ColorSwatchProps> = ({ address, color }) => {
+const ColorSwatch: React.FC<ColorSwatchProps> = ({ address, color, onView }) => {
   const { cart, addToCart, removeFromCart } = useCart();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -43,7 +44,7 @@ const ColorSwatch: React.FC<ColorSwatchProps> = ({ address, color }) => {
       <div
         className="w-20 h-20 mb-3 border border-gray-300 cursor-pointer transition-transform group-hover:scale-105 relative"
         style={{ backgroundColor: color.expandedHex }}
-        onClick={() => setIsModalOpen(true)}
+        onClick={onView}
         title="Click to view details"
       >
       </div>
