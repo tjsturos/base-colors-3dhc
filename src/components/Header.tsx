@@ -27,10 +27,7 @@ export default function Header() {
           </h1>
         </div>
         <div className="flex items-center gap-3">
-          <WalletWrapper
-            randomSwatchCount={randomSwatchCount}
-            setRandomSwatchCount={setRandomSwatchCount}
-          />
+          <WalletWrapper />
           {!address && <LoginButton />}
         </div>
       </div>

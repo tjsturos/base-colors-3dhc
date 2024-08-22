@@ -241,9 +241,7 @@ export default function Page() {
                 ? (<TransactionWrapper address={address!} color={selectedColor} className="w-full" />) 
                 : (<WalletWrapper 
                     className="w-full" 
-                    text="Log in" 
-                    randomSwatchCount={randomSwatchCount}
-                    setRandomSwatchCount={setRandomSwatchCount}
+                    text="Log in"
                   />)
               }
             </div>
