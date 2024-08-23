@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "update": "git pull && npx next build && pm2 restart base-colors-swatches",
+    "update": "git pull && npx next build && pm2 restart base-colors-3dhc",
     "build": "next build",
     "check": "biome check --write .",
     "ci:check": "biome ci --formatter-enabled=false --linter-enabled=false",
