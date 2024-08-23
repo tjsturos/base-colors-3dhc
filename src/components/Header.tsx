@@ -23,7 +23,7 @@ export default function Header() {
           <Image src="/base-colors-3dhc.png" alt="Base Colors 3DHC Logo" width={210} height={70} />
         </div>
         <div className="flex items-center gap-3">
-          <WalletWrapper />
+          {address && <WalletWrapper />}
           {!address && <LoginButton />}
         </div>
       </div>
