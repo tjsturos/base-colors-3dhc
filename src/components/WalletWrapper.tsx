@@ -37,7 +37,7 @@ export default function WalletWrapper({
         <Avatar className="h-6 w-6 hidden sm:block" />
         <Name 
           chain={process.env.NODE_ENV === 'production' ? base : baseSepolia}
-          className="sm:text-base text-[0.875rem]"
+          className="sm:text-base text-[0.875rem] -ml-2 sm:ml-0"
         />
       </ConnectWallet>
       <WalletDropdown>
