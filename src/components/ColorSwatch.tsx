@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import TransactionWrapper from './TransactionWrapper';
-import type { Address } from 'viem';
-import WalletWrapper from './WalletWrapper';
 import { Press_Start_2P } from 'next/font/google';
 import { useCart } from '../contexts/CartContext';
+import { FaPlus, FaMinus } from 'react-icons/fa';
 
 const pressStart2P = Press_Start_2P({ 
   weight: '400',
@@ -39,7 +38,10 @@ const ColorSwatch: React.FC<ColorSwatchProps> = ({ address, color, onView }) => 
   return (
     <div className="flex flex-col items-center group">
       <div className={`text-sm mb-2 uppercase ${pressStart2P.className}`}>
-        <span>#</span>{color.hexCode.replace('#', '')}
+        <div className="flex flex items-center">
+          <span className="font-sans text-xl mb-1 mr-1">#</span>
+          <span>{color.hexCode.replace('#', '')}</span>
+        </div>
       </div>
       <div
         className="w-20 h-20 mb-3 border border-gray-300 cursor-pointer transition-transform group-hover:scale-105 relative"
@@ -51,13 +53,23 @@ const ColorSwatch: React.FC<ColorSwatchProps> = ({ address, color, onView }) => 
       
       <button
         onClick={handleCartAction}
-        className={`w-full font-bold py-2 px-4 rounded-xl ${
+        className={`w-full font-bold py-2 px-4 rounded-xl flex items-center justify-center ${
           isInCart
-            ? 'bg-red-500 hover:bg-red-600 text-white'
-            : 'bg-green-500 hover:bg-green-600 text-white'
+            ? 'bg-gray-600 hover:bg-gray-700 text-white'
+            : 'bg-gray-500 hover:bg-gray-600 text-white'
         }`}
       >
-        {isInCart ? 'Remove from Cart' : 'Add to Cart'}
+        {isInCart ? (
+          <>
+            <FaMinus className="mr-2" />
+            Remove
+          </>
+        ) : (
+          <>
+            <FaPlus className="mr-2" />
+            Add
+          </>
+        )}
       </button>
       
       {isModalOpen && (
@@ -72,13 +84,23 @@ const ColorSwatch: React.FC<ColorSwatchProps> = ({ address, color, onView }) => 
             <div className="flex justify-between">
               <button
                 onClick={handleCartAction}
-                className={`font-bold py-2 px-4 rounded ${
+                className={`font-bold py-2 px-4 rounded flex items-center ${
                   isInCart
-                    ? 'bg-red-500 hover:bg-red-600 text-white'
-                    : 'bg-green-500 hover:bg-green-600 text-white'
+                    ? 'bg-gray-600 hover:bg-gray-700 text-white'
+                    : 'bg-gray-500 hover:bg-gray-600 text-white'
                 }`}
               >
-                {isInCart ? 'Remove from Cart' : 'Add to Cart'}
+                {isInCart ? (
+                  <>
+                    <FaMinus className="mr-2" />
+                    Remove from Cart
+                  </>
+                ) : (
+                  <>
+                    <FaPlus className="mr-2" />
+                    Add to Cart
+                  </>
+                )}
               </button>
               {address && (
                 <TransactionWrapper 

@@ -17,14 +17,10 @@ export default function Header() {
   const [randomSwatchCount, setRandomSwatchCount] = useState(10);
 
   return (
-    <header className="w-full bg-gray-100 py-4 px-6">
+    <header className="w-full bg-gray-100 py-4 pl-0 pr-6">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <Image src="/icon.svg" alt="Logo" width={48} height={48} className="hidden sm:block" />
-          <h1 className="text-2xl font-bold flex flex-col items-start">
-            <span className="font-sans">Base Colors</span>
-            <span className={`text-xl mt-1 ${pressStart2P.className}`}>3DHC</span>
-          </h1>
+          <Image src="/base-colors-3dhc.png" alt="Base Colors 3DHC Logo" width={210} height={70} />
         </div>
         <div className="flex items-center gap-3">
           <WalletWrapper />

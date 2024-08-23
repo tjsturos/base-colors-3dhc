@@ -13,8 +13,7 @@ import {
   WalletDropdownDisconnect,
   WalletDropdownLink,
 } from '@coinbase/onchainkit/wallet';
-import { useState } from 'react';
-import Settings from 'src/components/Settings';
+import { baseSepolia, base } from 'wagmi/chains';
 
 type WalletWrapperParams = {
   text?: string;
@@ -33,10 +32,13 @@ export default function WalletWrapper({
       <ConnectWallet
         withWalletAggregator={withWalletAggregator}
         text={text}
-        className={`w-full flex-grow ${className}`}
+        className={`w-full flex-grow ${className || ''}`}
       >
-        <Avatar className="h-6 w-6" />
-        <Name />
+        <Avatar className="h-6 w-6 hidden sm:block" />
+        <Name 
+          chain={process.env.NODE_ENV === 'production' ? base : baseSepolia}
+          className="sm:text-base text-[0.875rem]"
+        />
       </ConnectWallet>
       <WalletDropdown>
         <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick={true}>

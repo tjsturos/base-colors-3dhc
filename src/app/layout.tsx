@@ -6,16 +6,11 @@ import '@coinbase/onchainkit/styles.css';
 import '@rainbow-me/rainbowkit/styles.css';
 import dynamic from 'next/dynamic';
 import Header from '../components/Header';
-import { Press_Start_2P } from 'next/font/google';
+
 import { SettingsProvider } from '../contexts/SettingsContext';
 import { CartProvider } from '../contexts/CartContext';
 import MintCart from '../components/MintCart';
-
-const pressStart2P = Press_Start_2P({ 
-  weight: '400',
-  subsets: ['latin'],
-  display: 'swap',
-});
+import Image from 'next/image';
 
 const OnchainProviders = dynamic(
   () => import('src/components/OnchainProviders'),
@@ -42,13 +37,23 @@ export default function RootLayout({
 
   useEffect(() => {
     setIsClient(true);
-    const intervalId = setInterval(() => {
-      const randomIndex = Math.floor(Math.random() * COMBINED_PALETTE.length);
-      setCurrentColor(COMBINED_PALETTE[randomIndex]);
-    }, 1500); // Change color every 1.5 seconds
+    const randomIndex = Math.floor(Math.random() * COMBINED_PALETTE.length);
+    setCurrentColor(COMBINED_PALETTE[randomIndex]);
 
-    return () => clearInterval(intervalId);
-  }, []);
+    let intervalId: NodeJS.Timeout | null = null;
+
+    if (!isLoadingComplete) {
+      intervalId = setInterval(() => {
+        const randomIndex = Math.floor(Math.random() * COMBINED_PALETTE.length);
+        setCurrentColor(COMBINED_PALETTE[randomIndex]);
+        console.log(currentColor);
+      }, 1500); // Change color every 1.5 seconds
+    }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [isLoadingComplete, currentColor]);
 
   useEffect(() => {
     const checkLoadingComplete = () => {
@@ -67,6 +72,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <title>Base Colors - 3DHC</title>
         <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
       </head>
       <body className="flex flex-col min-h-screen bg-[#fafafa]">
@@ -90,16 +96,11 @@ export default function RootLayout({
               }}
             >
               <div 
-                className="loading-swatch rounded-xl shadow-lg w-32 h-32 mb-4"
+                className="loading-swatch rounded-xl shadow-lg w-32 h-32 mb-5"
                 style={{ backgroundColor: currentColor }}
               ></div>
               <div className="flex flex-col items-center">
-                <h2 className="text-2xl font-bold font-sans text-black">
-                  Base Colors
-                </h2>
-                <span className={`text-xl mt-1 ${pressStart2P.className} text-black`}>
-                  3DHC
-                </span>
+                <Image src="/base-colors.avif" alt="Base Colors Logo" width={300} height={100} />
               </div>
             </div>
           )}

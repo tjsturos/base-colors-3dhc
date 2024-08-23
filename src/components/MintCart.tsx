@@ -1,7 +1,8 @@
 import React from 'react';
-import { useCart } from '../contexts/CartContext';
-import TransactionWrapper from './TransactionWrapper';
+import { useCart } from 'src/contexts/CartContext';
+import TransactionWrapper from 'src/components/TransactionWrapper';
 import { useAccount } from 'wagmi';
+import WalletWrapper from 'src/components/WalletWrapper';
 
 const MintCart: React.FC = () => {
   const { cart, removeFromCart } = useCart();
@@ -28,12 +29,14 @@ const MintCart: React.FC = () => {
           </div>
         ))}
       </div>
-      {address && (
+      {address ? (
         <TransactionWrapper
           address={address}
           color={cart[0]} // Pass the first color, but the component will use the entire cart
           className="w-full"
         />
+      ) : (
+        <WalletWrapper text="Log In" className="bg-blue-500 text-white py-2 px-4 rounded" />
       )}
     </div>
   );
