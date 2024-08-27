@@ -1,8 +1,9 @@
 'use client';
 import React from 'react';
-import { useAccount, useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useSendTransaction, useWaitForTransactionReceipt, useEstimateFeesPerGas, useEstimateGas } from 'wagmi';
 import { parseEther, encodeFunctionData } from 'viem';
 import type { Address, BaseError } from 'viem';
+import { baseSepolia, base } from 'wagmi/chains';
 import { mintABI, mintContractAddress } from '../constants';
 import { useCart } from '../contexts/CartContext';
 import LoadingSpinner from './LoadingSpinner';
@@ -42,6 +43,20 @@ export default function TransactionWrapper({
   const mintCost = 0.001;
   const mintTotalCost = cart.length * mintCost;
 
+  const { data: feesPerGas } = useEstimateFeesPerGas({
+    chainId: process.env.ENVIRONMENT === 'development' ? baseSepolia.id : base.id,
+  });
+
+  const { data: estimatedGas } = useEstimateGas({
+    to: mintContractAddress,
+    value: parseEther(`${mintTotalCost}`),
+    data: encodeFunctionData({
+      abi: mintABI,
+      functionName,
+      args,
+    }),
+  });
+
   const { data: hash, error, isPending, sendTransaction } = useSendTransaction();
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
@@ -67,6 +82,9 @@ export default function TransactionWrapper({
         functionName,
         args,
       }),
+      gas: estimatedGas,
+      maxFeePerGas: feesPerGas?.maxFeePerGas,
+      maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
     });
   };
 
@@ -92,11 +110,11 @@ export default function TransactionWrapper({
           buttonText
         )}
       </button>
-      {hash && <div>Transaction Hash: {hash}</div>}
-      {isConfirming && <div>Waiting for confirmation...</div>}
-      {isConfirmed && <div>Transaction confirmed.</div>}
+      {hash && <div className="text-center">Transaction Hash: {hash}</div>}
+      {isConfirming && <div className="text-center">Waiting for confirmation...</div>}
+      {isConfirmed && <div className="text-center">Transaction confirmed.</div>}
       {error && (
-        <div>Error: {(error as BaseError).shortMessage || error.message}</div>
+        <div className="text-center text-red-500">Error: {(error as BaseError).shortMessage || error.message}</div>
       )}
     </form>
   );
