@@ -41,13 +41,13 @@ export default function TransactionWrapper({
   const functionName = cart.length > 1 ? 'mintBatch' : 'mint';
 
   const mintCost = 0.001;
-  const mintTotalCost = cart.length * mintCost;
+  const mintTotalCost: Number = cart.length * mintCost;
 
   const { data: feesPerGas } = useEstimateFeesPerGas({
     chainId: process.env.ENVIRONMENT === 'development' ? baseSepolia.id : base.id,
   });
 
-  const { data: estimatedGas } = useEstimateGas({
+  const { data: estimatedGas, error: estimatedGasError } = useEstimateGas({
     to: mintContractAddress,
     value: parseEther(`${mintTotalCost}`),
     data: encodeFunctionData({
@@ -56,6 +56,9 @@ export default function TransactionWrapper({
       args,
     }),
   });
+
+  debugLog(`Estimated Gas: ${estimatedGas}`);
+  debugLog(`Estimated Gas Error: ${estimatedGasError}`);
 
   const { data: hash, error, isPending, sendTransaction } = useSendTransaction();
 
