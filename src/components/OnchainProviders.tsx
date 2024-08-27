@@ -23,7 +23,7 @@ const OnchainProviders: React.FC<OnchainProvidersProps> = ({ children }) => {
       <QueryClientProvider client={queryClient}>
         <OnchainKitProvider
           apiKey={NEXT_PUBLIC_CDP_API_KEY}
-          chain={process.env.NODE_ENV === 'development' ? baseSepolia : base}
+          chain={process.env.ENVIRONMENT === 'development' ? baseSepolia : base}
         >
           <RainbowKitProvider modalSize="compact">
             {children}

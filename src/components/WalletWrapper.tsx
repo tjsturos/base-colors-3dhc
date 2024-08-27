@@ -39,7 +39,7 @@ export default function WalletWrapper({
         <Avatar className="h-6 w-6 hidden sm:block" />
         {address ? (
           <Name 
-            chain={process.env.NODE_ENV === 'production' ? base : baseSepolia}
+            chain={process.env.ENVIRONMENT === 'production' ? base : baseSepolia}
             className="sm:text-base text-[0.875rem] -ml-2 sm:ml-0"
           />
         ) : (
