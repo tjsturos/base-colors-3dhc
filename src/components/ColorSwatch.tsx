@@ -105,7 +105,6 @@ const ColorSwatch: React.FC<ColorSwatchProps> = ({ address, color, onView }) => 
               {address && (
                 <TransactionWrapper 
                   address={address} 
-                  color={color} 
                   className="inline-block"
                   onComplete={() => setIsModalOpen(false)}
                 />

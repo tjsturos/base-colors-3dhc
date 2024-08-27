@@ -1,13 +1,13 @@
 'use client';
 import Footer from 'src/components/Footer';
 import { useAccount } from 'wagmi';
-import ColorSwatch from '../components/ColorSwatch';
-import TransactionWrapper from '../components/TransactionWrapper';
+import ColorSwatch from 'src/components/ColorSwatch';
+import TransactionWrapper from 'src/components/TransactionWrapper';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import WalletWrapper from 'src/components/WalletWrapper';
 import SearchBar from 'src/components/SearchBar';
-import Settings from '../components/Settings';
-import { useSettings } from '../contexts/SettingsContext';
+import Settings from 'src/components/Settings';
+import { useSettings } from 'src/contexts/SettingsContext';
 import LoadingSpinner from 'src/components/LoadingSpinner'; 
 import { Press_Start_2P } from 'next/font/google';
 import SettingsIcon from 'src/components/SettingsIcon';
@@ -238,7 +238,7 @@ export default function Page() {
             </div>
             <div className="mb-1 w-full modal-button-override">
               {address 
-                ? (<TransactionWrapper address={address!} color={selectedColor} className="w-full" />) 
+                ? (<TransactionWrapper address={address!} className="w-full" />) 
                 : (<WalletWrapper 
                     className="w-full" 
                     text="Log in"
