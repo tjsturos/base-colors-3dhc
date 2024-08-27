@@ -32,7 +32,6 @@ const MintCart: React.FC = () => {
       {address ? (
         <TransactionWrapper
           address={address}
-          color={cart[0]} // Pass the first color, but the component will use the entire cart
           className="w-full"
         />
       ) : (
