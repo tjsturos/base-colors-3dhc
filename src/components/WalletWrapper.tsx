@@ -14,6 +14,8 @@ import {
   WalletDropdownLink,
 } from '@coinbase/onchainkit/wallet';
 import { baseSepolia, base } from 'wagmi/chains';
+import LoadingSpinner from './LoadingSpinner';
+import { useAccount } from 'wagmi';
 
 type WalletWrapperParams = {
   text?: string;
@@ -26,7 +28,7 @@ export default function WalletWrapper({
   text,
   withWalletAggregator = false,
 }: WalletWrapperParams) {
-
+  const { address } = useAccount();
   return (
     <Wallet>
       <ConnectWallet
@@ -35,10 +37,14 @@ export default function WalletWrapper({
         className={`w-full flex-grow ${className || ''}`}
       >
         <Avatar className="h-6 w-6 hidden sm:block" />
-        <Name 
-          chain={process.env.NODE_ENV === 'production' ? base : baseSepolia}
-          className="sm:text-base text-[0.875rem] -ml-2 sm:ml-0"
-        />
+        {address ? (
+          <Name 
+            chain={process.env.NODE_ENV === 'production' ? base : baseSepolia}
+            className="sm:text-base text-[0.875rem] -ml-2 sm:ml-0"
+          />
+        ) : (
+          <LoadingSpinner />
+        )}
       </ConnectWallet>
       <WalletDropdown>
         <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick={true}>
