@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { useSettings } from '../contexts/SettingsContext';
+import { Address } from 'viem'
 
 interface SettingsProps {
   onClose: () => void;
@@ -11,7 +12,7 @@ interface SettingsProps {
 export default function Settings({ onClose, randomSwatchCount, setRandomSwatchCount }: SettingsProps) {
   const { recipientAddress, setRecipientAddress, clearRecipientAddress } = useSettings();
   const [localSwatchCount, setLocalSwatchCount] = useState(randomSwatchCount);
-  const [recipient, setRecipient] = useState(recipientAddress || '');
+  const [recipient, setRecipient] = useState<Address | ''>(recipientAddress || '');
   const [error, setError] = useState('');
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -50,7 +51,7 @@ export default function Settings({ onClose, randomSwatchCount, setRandomSwatchCo
   };
 
   const handleRecipientChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setRecipient(e.target.value);
+    setRecipient(e.target.value as Address);
     setError('');
   };
 
