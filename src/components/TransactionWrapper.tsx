@@ -1,11 +1,11 @@
 'use client';
-import React from 'react';
-import { useAccount, useSendTransaction, useWaitForTransactionReceipt, useEstimateFeesPerGas, useEstimateGas } from 'wagmi';
-import { parseEther, encodeFunctionData } from 'viem';
+import React, { useEffect, useState } from 'react';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { parseEther } from 'viem';
 import type { Address, BaseError } from 'viem';
-import { baseSepolia, base } from 'wagmi/chains';
-import { mintABI, mintContractAddress } from '../constants';
-import { useCart } from '../contexts/CartContext';
+import { abi, mintContractAddress as address } from '../constants';
+import { useCart } from 'src/contexts/CartContext';
+import { useSettings } from 'src/contexts/SettingsContext';
 import LoadingSpinner from './LoadingSpinner';
 
 // Helper function for debug logging
@@ -15,52 +15,49 @@ const debugLog = (...args: any[]) => {
   }
 };
 
-interface Color {
-  hexCode: string;
-  expandedHex: string;
-}
-
 type TransactionWrapperParams = {
-  address: Address;
   className?: string;
   onComplete?: () => void;
 };
 
 export default function TransactionWrapper({
-  address,
   className,
   onComplete,
 }: TransactionWrapperParams) {
   const { cart, clearCart } = useCart();
-  const { isConnected } = useAccount();
+  const { isConnected, address: userAddress } = useAccount();
+  const { recipientAddress } = useSettings();
+  const [mintToAddress, setMintToAddress] = useState<Address | undefined>(recipientAddress || userAddress);
+  const [args, setArgs] = useState<any[]>([]);
+  const [functionName, setFunctionName] = useState<string>('mint');
 
-  const args = cart.length > 1 ? 
-    [cart.map(c => c.expandedHex), cart.map(c => c.hexCode), BigInt(cart.length), address] : 
-    [cart[0].expandedHex, cart[0].hexCode, address];
+  useEffect(() => {
+    setMintToAddress(recipientAddress || userAddress);
+  }, [recipientAddress, userAddress]);
 
-  const functionName = cart.length > 1 ? 'mintBatch' : 'mint';
+  useEffect(() => {
+    if (cart.length > 1) {
+      setArgs([cart.map(c => c.hexCode), cart.map(c => c.name), BigInt(cart.length), address]);
+      setFunctionName('mintBatch');
+    } else if (cart.length === 1) {
+      setArgs([cart[0].hexCode, cart[0].name, address]);
+      setFunctionName('mint');
+    } else {
+      setArgs([]);
+      setFunctionName('mint');
+    }
+  }, [cart, address]);
+
+  // Debug logging
+  useEffect(() => {
+    debugLog('Minting to address:', mintToAddress);
+  }, [mintToAddress]);
 
   const mintCost = 0.001;
-  const mintTotalCost: Number = cart.length * mintCost;
+  const value = parseEther(`${cart.length * mintCost}`);
 
-  const { data: feesPerGas } = useEstimateFeesPerGas({
-    chainId: process.env.ENVIRONMENT === 'development' ? baseSepolia.id : base.id,
-  });
 
-  const { data: estimatedGas, error: estimatedGasError } = useEstimateGas({
-    to: mintContractAddress,
-    value: parseEther(`${mintTotalCost}`),
-    data: encodeFunctionData({
-      abi: mintABI,
-      functionName,
-      args,
-    }),
-  });
-
-  debugLog(`Estimated Gas: ${estimatedGas}`);
-  debugLog(`Estimated Gas Error: ${estimatedGasError}`);
-
-  const { data: hash, error, isPending, sendTransaction } = useSendTransaction();
+  const { data: hash, error, isPending, writeContract } = useWriteContract();
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
     hash,
@@ -77,17 +74,12 @@ export default function TransactionWrapper({
 
   const handleMint = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    sendTransaction({
-      to: mintContractAddress,
-      value: parseEther(`${mintTotalCost}`),
-      data: encodeFunctionData({
-        abi: mintABI,
-        functionName,
-        args,
-      }),
-      gas: estimatedGas,
-      maxFeePerGas: feesPerGas?.maxFeePerGas,
-      maxPriorityFeePerGas: feesPerGas?.maxPriorityFeePerGas,
+    writeContract({
+      abi,
+      address,
+      functionName,
+      value,
+      args,
     });
   };
 

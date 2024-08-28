@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { Address } from 'viem';
 
 interface SettingsContextType {
   randomSwatchCount: number;
   setRandomSwatchCount: (count: number) => void;
-  recipientAddress: string | null;
-  setRecipientAddress: (address: string | null) => void;
+  recipientAddress: Address | null;
+  setRecipientAddress: (address: Address | null) => void;
   clearRecipientAddress: () => void;
 }
 
@@ -24,10 +25,10 @@ interface SettingsProviderProps {
 
 export function SettingsProvider({ children }: SettingsProviderProps) {
   const [randomSwatchCount, setRandomSwatchCount] = useState(10);
-  const [recipientAddress, setRecipientAddress] = useState<string | null>(null);
+  const [recipientAddress, setRecipientAddress] = useState<Address | null>(null);
 
   useEffect(() => {
-    const savedRecipient = localStorage.getItem('recipientAddress');
+    const savedRecipient = localStorage.getItem('recipientAddress') as Address | null;
     if (savedRecipient) {
       setRecipientAddress(savedRecipient);
     }

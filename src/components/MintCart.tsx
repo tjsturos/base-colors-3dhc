@@ -18,7 +18,7 @@ const MintCart: React.FC = () => {
           <div
             key={color.hexCode}
             className="relative w-8 h-8 rounded"
-            style={{ backgroundColor: color.expandedHex }}
+            style={{ backgroundColor: color.hexCode }}
           >
             <button
               onClick={() => removeFromCart(color.hexCode)}
@@ -31,7 +31,6 @@ const MintCart: React.FC = () => {
       </div>
       {address ? (
         <TransactionWrapper
-          address={address}
           className="w-full"
         />
       ) : (

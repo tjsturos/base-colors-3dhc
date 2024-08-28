@@ -31,8 +31,8 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       });
 
       const colors = records.map((record: any) => ({
-        hexCode: record['HEX CODE'],
-        expandedHex: record['Expanded HEX'],
+        name: record['HEX CODE'],
+        hexCode: record['Expanded HEX'],
       }));
 
       res.status(200).json({ colors, lastModified: lastModified.toISOString(), relativeTime });

@@ -1,9 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-
-interface Color {
-  hexCode: string;
-  expandedHex: string;
-}
+import { Color } from 'src/constants';
 
 interface CartContextType {
   cart: Color[];

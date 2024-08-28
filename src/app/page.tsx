@@ -11,6 +11,7 @@ import { useSettings } from 'src/contexts/SettingsContext';
 import LoadingSpinner from 'src/components/LoadingSpinner'; 
 import { Press_Start_2P } from 'next/font/google';
 import SettingsIcon from 'src/components/SettingsIcon';
+import { Color } from 'src/constants';
 
 const pressStart2P = Press_Start_2P({ 
   weight: '400',
@@ -18,10 +19,7 @@ const pressStart2P = Press_Start_2P({
   display: 'swap',
 });
 
-interface Color {
-  hexCode: string;
-  expandedHex: string;
-}
+
 
 export default function Page() {
   const { address } = useAccount();
@@ -65,7 +63,7 @@ export default function Page() {
     if (!isRandomMode) {
       const filtered = colors.filter(color => 
         color.hexCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        color.expandedHex.toLowerCase().includes(searchTerm.toLowerCase())
+        color.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredColors(filtered);
       setNoSearchResults(filtered.length === 0);
@@ -208,7 +206,6 @@ export default function Page() {
                 <div key={color.hexCode} className="bg-gray-100 p-5 rounded-xl">
                   <ColorSwatch 
                     color={color} 
-                    address={address!} 
                     onView={() => openModal(color)}
                   />
                 </div>
@@ -234,11 +231,11 @@ export default function Page() {
             ></div>
             <div className="text-center mb-4">
               <h2 className={`text-2xl font-bold ${pressStart2P.className}`}>{selectedColor.hexCode.replace('#', '')}</h2>
-              <p className="text-lg mt-2">{selectedColor.expandedHex}</p>
+              <p className="text-lg mt-2">{selectedColor.name}</p>
             </div>
             <div className="mb-1 w-full modal-button-override">
               {address 
-                ? (<TransactionWrapper address={address!} className="w-full" />) 
+                ? (<TransactionWrapper className="w-full" />) 
                 : (<WalletWrapper 
                     className="w-full" 
                     text="Log in"

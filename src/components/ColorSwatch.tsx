@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import TransactionWrapper from './TransactionWrapper';
 import { Press_Start_2P } from 'next/font/google';
-import { useCart } from '../contexts/CartContext';
+import { useCart } from 'src/contexts/CartContext';
 import { FaPlus, FaMinus } from 'react-icons/fa';
+import { Color } from 'src/constants';
+import { useAccount } from 'wagmi';
 
 const pressStart2P = Press_Start_2P({ 
   weight: '400',
@@ -10,21 +12,15 @@ const pressStart2P = Press_Start_2P({
   display: 'swap',
 });
 
-interface Color {
-  hexCode: string;
-  expandedHex: string;
-}
-
 interface ColorSwatchProps {
   color: Color;
-  address: `0x${string}`;
   onView: () => void;
 }
 
-const ColorSwatch: React.FC<ColorSwatchProps> = ({ address, color, onView }) => {
+const ColorSwatch: React.FC<ColorSwatchProps> = ({ color, onView }) => {
   const { cart, addToCart, removeFromCart } = useCart();
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const { address } = useAccount();
   const isInCart = cart.some(item => item.hexCode === color.hexCode);
 
   const handleCartAction = () => {
@@ -45,7 +41,7 @@ const ColorSwatch: React.FC<ColorSwatchProps> = ({ address, color, onView }) => 
       </div>
       <div
         className="w-20 h-20 mb-3 border border-gray-300 cursor-pointer transition-transform group-hover:scale-105 relative"
-        style={{ backgroundColor: color.expandedHex }}
+        style={{ backgroundColor: color.hexCode }}
         onClick={onView}
         title="Click to view details"
       >
@@ -78,9 +74,9 @@ const ColorSwatch: React.FC<ColorSwatchProps> = ({ address, color, onView }) => 
             <h2 className="text-xl font-bold mb-4">Color Details</h2>
             <div 
               className="w-32 h-32 mb-4 mx-auto"
-              style={{ backgroundColor: color.expandedHex }}
+              style={{ backgroundColor: color.hexCode }}
             ></div>
-            <p className="mb-4">Hex: {color.hexCode}</p>
+            <p className="mb-4">Hex: {color.name}</p>
             <div className="flex justify-between">
               <button
                 onClick={handleCartAction}
@@ -104,7 +100,6 @@ const ColorSwatch: React.FC<ColorSwatchProps> = ({ address, color, onView }) => 
               </button>
               {address && (
                 <TransactionWrapper 
-                  address={address} 
                   className="inline-block"
                   onComplete={() => setIsModalOpen(false)}
                 />
