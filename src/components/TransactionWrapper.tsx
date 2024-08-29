@@ -7,6 +7,7 @@ import { abi, mintContractAddress as address } from '../constants';
 import { useCart } from 'src/contexts/CartContext';
 import { useSettings } from 'src/contexts/SettingsContext';
 import LoadingSpinner from './LoadingSpinner';
+import { useColors } from 'src/contexts/ColorsContext'; // Assume this context exists
 
 // Helper function for debug logging
 const debugLog = (...args: any[]) => {
@@ -27,6 +28,7 @@ export default function TransactionWrapper({
   const { cart, clearCart } = useCart();
   const { isConnected, address: userAddress } = useAccount();
   const { recipientAddress } = useSettings();
+  const { removeColors } = useColors(); // New hook to manage colors
   const [mintToAddress, setMintToAddress] = useState<Address | undefined>(recipientAddress || userAddress);
   const [args, setArgs] = useState<any[]>([]);
   const [functionName, setFunctionName] = useState<string>('mint');
@@ -65,12 +67,14 @@ export default function TransactionWrapper({
 
   React.useEffect(() => {
     if (isConfirmed) {
+      // Remove minted colors from the display
+      removeColors(cart.map(color => color.hexCode));
       clearCart();
       if (onComplete) {
         onComplete();
       }
     }
-  }, [isConfirmed, clearCart, onComplete]);
+  }, [isConfirmed, clearCart, onComplete, removeColors, cart]);
 
   const handleMint = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
