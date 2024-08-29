@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useSwitchChain } from 'wagmi';
 import { parseEther } from 'viem';
 import type { Address, BaseError } from 'viem';
-import { abi, mintContractAddress as address, BASE_MAINNET_CHAIN_ID } from 'src/constants';
+import { abi, baseColorsAddress as address, BASE_MAINNET_CHAIN_ID } from 'src/constants';
 import { useCart } from 'src/contexts/CartContext';
 import { useSettings } from 'src/contexts/SettingsContext';
 import LoadingSpinner from './LoadingSpinner';

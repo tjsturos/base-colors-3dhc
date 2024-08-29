@@ -6,7 +6,7 @@ export interface Color {
 }
 
 export const comment = 'Minting a hex color that can be abbreviated.';
-export const mintContractAddress = '0x7Bc1C072742D8391817EB4Eb2317F98dc72C61dB';
+export const baseColorsAddress = '0x7bc1c072742d8391817eb4eb2317f98dc72c61db';
 
 export const abi = [
   { inputs: [], stateMutability: "nonpayable", type: "constructor" },
