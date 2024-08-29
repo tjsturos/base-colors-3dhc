@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import LoginButton from './LoginButton';
 import { useAccount } from 'wagmi';
@@ -14,7 +14,6 @@ const pressStart2P = Press_Start_2P({
 
 export default function Header() {
   const { address } = useAccount();
-  const [randomSwatchCount, setRandomSwatchCount] = useState(10);
 
   return (
     <header className="w-full bg-gray-100 py-4 pl-0 pr-3">

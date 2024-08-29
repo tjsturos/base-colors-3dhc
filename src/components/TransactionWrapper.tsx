@@ -3,12 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useSwitchChain } from 'wagmi';
 import { parseEther } from 'viem';
 import type { Address, BaseError } from 'viem';
-import { abi, mintContractAddress as address, BASE_MAINNET_CHAIN_ID, BASE_SEPOLIA_CHAIN_ID } from 'src/constants';
+import { abi, mintContractAddress as address, BASE_MAINNET_CHAIN_ID } from 'src/constants';
 import { useCart } from 'src/contexts/CartContext';
 import { useSettings } from 'src/contexts/SettingsContext';
 import LoadingSpinner from './LoadingSpinner';
 import { useColors } from 'src/contexts/ColorsContext'; // Assume this context exists
-import { NEXT_PUBLIC_ENVIRONMENT } from 'src/config';
+import { base } from 'wagmi/chains';
 
 // Helper function for debug logging
 const debugLog = (...args: any[]) => {
@@ -35,12 +35,11 @@ export default function TransactionWrapper({
   const [functionName, setFunctionName] = useState<string>('mint');
 
   const { chains, switchChain } = useSwitchChain();
-  const targetChainId = NEXT_PUBLIC_ENVIRONMENT === 'production' ? BASE_MAINNET_CHAIN_ID : BASE_SEPOLIA_CHAIN_ID;
   const [isWrongChain, setIsWrongChain] = useState(false);
 
   useEffect(() => {
-    setIsWrongChain(currentChainId !== targetChainId);
-  }, [currentChainId, targetChainId]);
+    setIsWrongChain(currentChainId !== BASE_MAINNET_CHAIN_ID);
+  }, [currentChainId]);
 
   useEffect(() => {
     setMintToAddress(recipientAddress || userAddress);
@@ -93,7 +92,7 @@ export default function TransactionWrapper({
 
   const handleSwitchChain = async () => {
     try {
-      await switchChain({ chainId: targetChainId });
+      await switchChain({ chainId: BASE_MAINNET_CHAIN_ID });
     } catch (error) {
       console.error('Failed to switch chain:', error);
     }
@@ -116,7 +115,7 @@ export default function TransactionWrapper({
       functionName,
       value,
       args,
-      chainId: targetChainId
+      chainId: BASE_MAINNET_CHAIN_ID
     });
   };
 
@@ -124,7 +123,7 @@ export default function TransactionWrapper({
     return <div>Please connect your wallet to mint.</div>;
   }
 
-  const targetChainName = chains.find(chain => chain.id === targetChainId)?.name || 'Target Chain';
+  const targetChainName = base.name || 'Target Chain';
   const buttonText = isWrongChain 
     ? `Switch to ${targetChainName}`
     : (cart.length > 1 ? `Mint ${cart.length} Colors` : 'Mint');

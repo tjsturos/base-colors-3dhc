@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useSettings } from 'src/contexts/SettingsContext';
 import LoadingSpinner from './LoadingSpinner';
 
@@ -27,7 +27,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
   isLoading,
   noSearchResults,
 }) => {
-  const { randomSwatchCount } = useSettings();
 
   const handleClearSearch = async () => {
     await onClearSearch();

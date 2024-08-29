@@ -3,10 +3,10 @@ import { OnchainKitProvider } from '@coinbase/onchainkit';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { type ReactNode } from 'react';
-import { baseSepolia, base } from 'viem/chains';
+import { base } from 'viem/chains';
 import { WagmiProvider } from 'wagmi';
-import { NEXT_PUBLIC_CDP_API_KEY, NEXT_PUBLIC_ENVIRONMENT } from '../config';
-import { useWamigConfig } from '../wagmi';
+import { NEXT_PUBLIC_CDP_API_KEY } from 'src/config';
+import { useWamigConfig } from 'src/wagmi';
 
 interface OnchainProvidersProps {
   children: ReactNode;
@@ -23,7 +23,7 @@ const OnchainProviders: React.FC<OnchainProvidersProps> = ({ children }) => {
       <QueryClientProvider client={queryClient}>
         <OnchainKitProvider
           apiKey={NEXT_PUBLIC_CDP_API_KEY}
-          chain={NEXT_PUBLIC_ENVIRONMENT === 'development' ? baseSepolia : base}
+          chain={base}
         >
           <RainbowKitProvider modalSize="compact">
             {children}

@@ -4,8 +4,6 @@ import {
   WARPCAST_LINK,
 } from 'src/links';
 
-
-
 export default function Footer() {
   return (
     <section className="mt-auto mb-2 flex w-full flex-col flex-col-reverse justify-between gap-2 md:mt-8 md:mb-6 md:flex-row">

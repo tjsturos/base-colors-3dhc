@@ -13,10 +13,9 @@ import {
   WalletDropdownDisconnect,
   WalletDropdownLink,
 } from '@coinbase/onchainkit/wallet';
-import { baseSepolia, base } from 'wagmi/chains';
+import { base } from 'wagmi/chains';
 import LoadingSpinner from './LoadingSpinner';
 import { useAccount } from 'wagmi';
-import { NEXT_PUBLIC_ENVIRONMENT } from 'src/config';
 
 type WalletWrapperParams = {
   text?: string;
@@ -41,7 +40,7 @@ export default function WalletWrapper({
         {address ? (
           <>
             <Name 
-              chain={NEXT_PUBLIC_ENVIRONMENT === 'production' ? base : baseSepolia}
+              chain={base}
               className="sm:text-base text-[0.875rem]  sm:ml-0"
               />
           </>
