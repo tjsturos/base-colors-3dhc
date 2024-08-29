@@ -37,12 +37,14 @@ export default function WalletWrapper({
         text={text}
         className={`w-full flex-grow ${className || ''}`}
       >
-        <Avatar className="h-6 w-6 hidden sm:block" />
+        <Avatar className="h-5 w-5" />
         {address ? (
-          <Name 
-            chain={NEXT_PUBLIC_ENVIRONMENT === 'production' ? base : baseSepolia}
-            className="sm:text-base text-[0.875rem] -ml-2 sm:ml-0"
-          />
+          <>
+            <Name 
+              chain={NEXT_PUBLIC_ENVIRONMENT === 'production' ? base : baseSepolia}
+              className="sm:text-base text-[0.875rem]  sm:ml-0"
+              />
+          </>
         ) : (
           <LoadingSpinner />
         )}
