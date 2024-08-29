@@ -74,6 +74,10 @@ export default function TransactionWrapper({
 
   const handleMint = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    debugLog("args", args);
+    debugLog("functionName", functionName);
+    debugLog("value", value);
+    debugLog("address", address);
     writeContract({
       abi,
       address,
