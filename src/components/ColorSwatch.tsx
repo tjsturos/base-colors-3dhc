@@ -36,7 +36,7 @@ const ColorSwatch: React.FC<ColorSwatchProps> = ({ color, onView }) => {
       <div className={`text-sm mb-2 uppercase ${pressStart2P.className}`}>
         <div className="flex flex items-center">
           <span className="font-sans text-xl mb-1 mr-1">#</span>
-          <span>{color.hexCode.replace('#', '')}</span>
+          <span>{color.name.replace('#', '')}</span>
         </div>
       </div>
       <div
