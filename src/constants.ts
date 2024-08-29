@@ -1,3 +1,5 @@
+import { NEXT_PUBLIC_ENVIRONMENT } from "./config";
+
 export const BASE_SEPOLIA_CHAIN_ID = 84532;
 export const BASE_MAINNET_CHAIN_ID = 8453;
 
@@ -7,7 +9,7 @@ export interface Color {
 }
 
 export const comment = 'Minting a hex color that can be abbreviated.';
-export const mintContractAddress = process.env.ENVIRONMENT === 'production' ? '0x7Bc1C072742D8391817EB4Eb2317F98dc72C61dB' : '0xDAF39bebD4FB13E4B6647F71834E5a35a1d94bc7';
+export const mintContractAddress = NEXT_PUBLIC_ENVIRONMENT === 'production' ? '0x7Bc1C072742D8391817EB4Eb2317F98dc72C61dB' : '0xDAF39bebD4FB13E4B6647F71834E5a35a1d94bc7';
 
 export const abi = [
   { inputs: [], stateMutability: "nonpayable", type: "constructor" },

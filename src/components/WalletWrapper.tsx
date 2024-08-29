@@ -16,6 +16,7 @@ import {
 import { baseSepolia, base } from 'wagmi/chains';
 import LoadingSpinner from './LoadingSpinner';
 import { useAccount } from 'wagmi';
+import { NEXT_PUBLIC_ENVIRONMENT } from 'src/config';
 
 type WalletWrapperParams = {
   text?: string;
@@ -39,7 +40,7 @@ export default function WalletWrapper({
         <Avatar className="h-6 w-6 hidden sm:block" />
         {address ? (
           <Name 
-            chain={process.env.ENVIRONMENT === 'production' ? base : baseSepolia}
+            chain={NEXT_PUBLIC_ENVIRONMENT === 'production' ? base : baseSepolia}
             className="sm:text-base text-[0.875rem] -ml-2 sm:ml-0"
           />
         ) : (
