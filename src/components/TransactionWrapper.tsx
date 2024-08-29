@@ -3,11 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseEther } from 'viem';
 import type { Address, BaseError } from 'viem';
-import { abi, mintContractAddress as address } from '../constants';
+import { abi, mintContractAddress as address, BASE_MAINNET_CHAIN_ID, BASE_SEPOLIA_CHAIN_ID } from 'src/constants';
 import { useCart } from 'src/contexts/CartContext';
 import { useSettings } from 'src/contexts/SettingsContext';
 import LoadingSpinner from './LoadingSpinner';
 import { useColors } from 'src/contexts/ColorsContext'; // Assume this context exists
+import { NEXT_PUBLIC_ENVIRONMENT } from 'src/config';
 
 // Helper function for debug logging
 const debugLog = (...args: any[]) => {
@@ -88,6 +89,7 @@ export default function TransactionWrapper({
       functionName,
       value,
       args,
+      chainId: NEXT_PUBLIC_ENVIRONMENT === 'production' ? BASE_MAINNET_CHAIN_ID : BASE_SEPOLIA_CHAIN_ID
     });
   };
 
