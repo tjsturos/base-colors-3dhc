@@ -17,15 +17,22 @@ const MintCart: React.FC = () => {
         {cart.map((color) => (
           <div
             key={color.hexCode}
-            className="relative w-8 h-8 rounded"
-            style={{ backgroundColor: color.hexCode }}
+            className="relative w-12 h-12 rounded flex flex-col items-center"
           >
-            <button
-              onClick={() => removeFromCart(color.hexCode)}
-              className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs"
+            <div
+              className="w-8 h-8 rounded mb-1"
+              style={{ backgroundColor: color.hexCode }}
             >
-              ×
-            </button>
+              <button
+                onClick={() => removeFromCart(color.hexCode)}
+                className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs"
+              >
+                ×
+              </button>
+            </div>
+            <span className="text-xs text-center overflow-hidden text-ellipsis w-full flex items-center justify-center">
+              <span className="text-[0.6rem] mr-[1px]">#</span><span className="text-[0.7rem]">{color.name.slice(1)}</span>
+            </span>
           </div>
         ))}
       </div>
