@@ -7,10 +7,9 @@ import { abi, baseColorsAddress as address, BASE_MAINNET_CHAIN_ID } from 'src/co
 import { useCart } from 'src/contexts/CartContext';
 import { useSettings } from 'src/contexts/SettingsContext';
 import LoadingSpinner from './LoadingSpinner';
-import { useColors } from 'src/contexts/ColorsContext'; // Assume this context exists
+import { useColors } from 'src/contexts/ColorsContext';
 import { base } from 'wagmi/chains';
 
-// Helper function for debug logging
 const debugLog = (...args: any[]) => {
   if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
     console.log(...args);
@@ -29,13 +28,11 @@ export default function TransactionWrapper({
   const { cart, clearCart } = useCart();
   const { isConnected, address: userAddress, chainId: currentChainId } = useAccount();
   const { recipientAddress } = useSettings();
-  const { removeColors } = useColors(); // New hook to manage colors
+  const { removeColors } = useColors();
   const [mintToAddress, setMintToAddress] = useState<Address | undefined>(recipientAddress || userAddress);
-  const [args, setArgs] = useState<any[]>([]);
-  const [functionName, setFunctionName] = useState<string>('mint');
-
-  const { chains, switchChain } = useSwitchChain();
   const [isWrongChain, setIsWrongChain] = useState(false);
+
+  const { switchChain } = useSwitchChain();
 
   useEffect(() => {
     setIsWrongChain(currentChainId !== BASE_MAINNET_CHAIN_ID);
@@ -45,43 +42,17 @@ export default function TransactionWrapper({
     setMintToAddress(recipientAddress || userAddress);
   }, [recipientAddress, userAddress]);
 
-  useEffect(() => {
-    if (cart.length > 1) {
-      setArgs([cart.map(c => c.hexCode), cart.map(c => c.name), BigInt(cart.length), address]);
-      setFunctionName('mintBatch');
-    } else if (cart.length === 1) {
-      setArgs([cart[0].hexCode, cart[0].name, address]);
-      setFunctionName('mint');
-    } else {
-      setArgs([]);
-      setFunctionName('mint');
-    }
-  }, [cart, address]);
-
-  // Debug logging
-  useEffect(() => {
-    debugLog('Minting to address:', mintToAddress);
-  }, [mintToAddress]);
-
   const mintCost = 0.001;
   const value = parseEther(`${cart.length * mintCost}`);
 
-
-  const { data: hash, error, isPending, writeContract, error: writeContractError } = useWriteContract();
+  const { data: hash, error, isPending, writeContract } = useWriteContract();
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
     hash,
   });
 
   useEffect(() => {
-    if (writeContractError) {
-      console.error('Write contract error:', writeContractError);
-    }
-  }, [writeContractError]);
-
-  React.useEffect(() => {
     if (isConfirmed) {
-      // Remove minted colors from the display
       removeColors(cart.map(color => color.hexCode));
       clearCart();
       if (onComplete) {
@@ -98,23 +69,21 @@ export default function TransactionWrapper({
     }
   };
 
-  const handleMint = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    
+  const handleMint = async () => {
     if (isWrongChain) {
-      return; // Don't proceed with minting if on wrong chain
+      return;
     }
 
-    debugLog("args", args);
-    debugLog("functionName", functionName);
-    debugLog("value", value);
-    debugLog("address", address);
+    const color = cart[0]?.hexCode || '#FF5733'; // Default color if cart is empty
+    const name = cart[0]?.name || 'Default Color'; // Default name if cart is empty
+
+    debugLog("Minting:", color, name, mintToAddress);
     writeContract({
       abi,
       address,
-      functionName,
+      functionName: 'mint',
+      args: [color, name, mintToAddress],
       value,
-      args,
       chainId: BASE_MAINNET_CHAIN_ID
     });
   };
@@ -126,14 +95,13 @@ export default function TransactionWrapper({
   const targetChainName = base.name || 'Target Chain';
   const buttonText = isWrongChain 
     ? `Switch to ${targetChainName}`
-    : (cart.length > 1 ? `Mint ${cart.length} Colors` : 'Mint');
+    : 'Mint';
 
   return (
-    <form onSubmit={handleMint} className={`flex flex-col w-full ${className}`}>
+    <div className={`flex flex-col w-full ${className}`}>
       <button 
-        disabled={isPending} 
-        type={isWrongChain ? "button" : "submit"}
-        onClick={isWrongChain ? handleSwitchChain : undefined}
+        disabled={isPending || cart.length === 0} 
+        onClick={isWrongChain ? handleSwitchChain : handleMint}
         className="mt-0 w-full text-white bg-blue-500 hover:bg-blue-600 py-2 px-4 rounded-xl disabled:bg-gray-400 flex items-center justify-center"
       >
         {isPending ? (
@@ -151,6 +119,6 @@ export default function TransactionWrapper({
       {error && (
         <div className="text-center text-red-500">Error: {(error as BaseError).shortMessage || error.message}</div>
       )}
-    </form>
+    </div>
   );
 }
