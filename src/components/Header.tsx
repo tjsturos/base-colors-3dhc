@@ -27,20 +27,28 @@ export default function Header() {
           {isConnected ? (
             <>
               <WalletWrapper />
-              <button onClick={handleDisconnect} className="bg-red-500 text-white px-4 py-2 rounded">
-                Disconnect
-              </button>
             </>
           ) : (
-            connectors.map((connector) => (
+            <div className="relative">
               <button
-                key={connector.uid}
-                onClick={() => handleConnect(connector)}
+                data-testid="connect-wallet-button"
                 className="bg-blue-500 text-white px-4 py-2 rounded"
+                onClick={() => document.getElementById('connector-dropdown')?.classList.toggle('hidden')}
               >
-                Connect {connector.name}
+                Connect Wallet
               </button>
-            ))
+              <div id="connector-dropdown" className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden" style={{ top: 'calc(100% + 0.5rem)', zIndex: 1000 }}>
+                {connectors.map((connector) => (
+                  <button
+                    key={connector.uid}
+                    onClick={() => handleConnect(connector)}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    {connector.name}
+                  </button>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       </div>

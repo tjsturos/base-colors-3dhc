@@ -30,11 +30,14 @@ export default function WalletWrapper({
 }: WalletWrapperParams) {
   const { address } = useAccount();
   return (
-    <Wallet>
+    <div className="flex flex-col w-full">
+
+    <Wallet data-testid="connect-wallet-button">
       <ConnectWallet
+        
         withWalletAggregator={withWalletAggregator}
         text={text}
-        className={`w-full flex-grow ${className || ''}`}
+        className={`flex flex-col w-full ${className || ''}`}
       >
         <Avatar className="h-5 w-5" />
         {address ? (
@@ -61,5 +64,6 @@ export default function WalletWrapper({
         <WalletDropdownDisconnect />
       </WalletDropdown>
     </Wallet>
+        </div>
   );
 }

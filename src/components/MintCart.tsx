@@ -41,7 +41,15 @@ const MintCart: React.FC = () => {
           className="w-full"
         />
       ) : (
-        <WalletWrapper text="Log In" className="bg-blue-500 text-white py-2 px-4 rounded" />
+        <button
+          onClick={() => {
+            console.log('Log In button clicked');
+            (document.querySelector('button[data-testid="connect-wallet-button"]') as HTMLButtonElement)?.click();
+          }}
+          className="w-full bg-blue-500 text-white py-2 px-4 rounded"
+        >
+          Log In
+        </button>
       )}
     </div>
   );
