@@ -74,15 +74,18 @@ export default function TransactionWrapper({
       return;
     }
 
-    const color = cart[0]?.hexCode || '#FF5733'; // Default color if cart is empty
-    const name = cart[0]?.name || 'Default Color'; // Default name if cart is empty
+    if (cart.length === 0) {
+      return;
+    }
 
-    debugLog("Minting:", color, name, mintToAddress);
+    const colors = cart.length > 1 ? cart.map(item => item.hexCode) : [cart[0]?.hexCode];
+    const names = cart.length > 1 ? cart.map(item => item.name.substring(1)) : [cart[0]?.name.substring(1)];
+
     writeContract({
       abi,
       address,
-      functionName: 'mint',
-      args: [color, name, mintToAddress],
+      functionName: cart.length > 1 ? 'mintBatch' : 'mint',
+      args: cart.length > 1 ? [colors, names, 1, mintToAddress] : [colors[0], names[0], mintToAddress],
       value,
       chainId: BASE_MAINNET_CHAIN_ID
     });
@@ -100,11 +103,11 @@ export default function TransactionWrapper({
   return (
     <div className={`flex flex-col w-full ${className}`}>
       <button 
-        disabled={isPending || cart.length === 0} 
+        disabled={(isPending || isConfirming) || cart.length === 0} 
         onClick={isWrongChain ? handleSwitchChain : handleMint}
         className="mt-0 w-full text-white bg-blue-500 hover:bg-blue-600 py-2 px-4 rounded-xl disabled:bg-gray-400 flex items-center justify-center"
       >
-        {isPending ? (
+        {(isConfirming || isPending) ? (
           <>
             <LoadingSpinner className="w-4 h-4 mr-2" />
             Confirming...
