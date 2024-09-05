@@ -19,7 +19,7 @@ const MintCart: React.FC = () => {
     <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg shadow-t-lg p-4 pb-3 pt-2 md:p-6">
       <div className="flex justify-center mb-1">
         <h2 className="text-lg font-bold relative">
-          Checkout ({cart.length} {cart.length === 1 ? 'Color' : 'Colors'})
+          Checkout ({cart.length} Base {cart.length === 1 ? 'Color' : 'Colors'}) - {(0.001 * cart.length).toFixed(4).replace(/\.?0+$/, '')} ETH
         
         </h2>
       </div>
@@ -50,7 +50,7 @@ const MintCart: React.FC = () => {
       <div className="w-full h-px bg-gray-200 mb-3"></div>
       {address ? (
         <TransactionWrapper
-          className="w-full"
+          className="w-full md:w-3/4 lg:w-1/2 xl:w-1/3 mx-auto"
         />
       ) : (
         <button
