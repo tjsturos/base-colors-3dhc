@@ -161,19 +161,21 @@ export default function Page() {
         )}
         {recipientAddress && (
           <div className="flex items-center mb-4">
-            <p 
-              className="text-sm text-blue-600 cursor-pointer hover:underline mr-2"
-              onClick={openSettings}
-            >
-              Sending Mint(s) to: {recipientAddress}
-            </p>
-            <button
-              onClick={clearRecipientAddress}
-              className="text-red-500 hover:text-red-700"
-              aria-label="Clear recipient address"
-            >
-              ✕
-            </button>
+            <div className="flex items-center bg-gray-100 rounded-full px-4 py-2">
+              <p 
+                className="text-sm text-blue-600 cursor-pointer hover:underline mr-2"
+                onClick={openSettings}
+              >
+                Sending Mint(s) to: {recipientAddress}
+              </p>
+              <button
+                onClick={clearRecipientAddress}
+                className="text-red-500 hover:text-red-700 ml-2"
+                aria-label="Clear recipient address"
+              >
+                ✕
+              </button>
+            </div>
           </div>
         )}
         <SearchBar
