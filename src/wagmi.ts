@@ -6,7 +6,7 @@ import { base } from 'wagmi/chains';
 import { NEXT_PUBLIC_WC_PROJECT_ID } from './config';
 import { coinbaseWallet, injected, walletConnect } from 'wagmi/connectors'
 
-export function useWamigConfig() {
+export function useWagmiConfig() {
   const projectId = NEXT_PUBLIC_WC_PROJECT_ID ?? '';
   if (!projectId) {
     const providerErrMessage =

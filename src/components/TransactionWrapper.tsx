@@ -9,6 +9,7 @@ import { useSettings } from 'src/contexts/SettingsContext';
 import LoadingSpinner from './LoadingSpinner';
 import { useColors } from 'src/contexts/ColorsContext';
 import { base } from 'wagmi/chains';
+import { resolveEnsName } from 'src/utils';
 
 const debugLog = (...args: any[]) => {
   if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
@@ -40,7 +41,13 @@ export default function TransactionWrapper({
   }, [currentChainId]);
 
   useEffect(() => {
-    setMintToAddress(recipientAddress || userAddress);
+    if (recipientAddress?.endsWith('.eth')) {
+      resolveEnsName(recipientAddress).then((resolvedAddress) => {
+        setMintToAddress(resolvedAddress as Address);
+      });
+    } else {
+      setMintToAddress(userAddress);
+    }
   }, [recipientAddress, userAddress]);
 
   const mintCost = 0.001;

@@ -14,7 +14,6 @@ import {
   WalletDropdownDisconnect,
   WalletDropdownLink,
 } from '@coinbase/onchainkit/wallet';
-import { useAccount } from 'wagmi';
 
 type WalletWrapperParams = {
   text?: string;
@@ -31,7 +30,7 @@ export default function WalletWrapper({
     <>
       <Wallet>
         <ConnectWallet
-          withWalletAggregator={withWalletAggregator}
+          withWalletAggregator={true}
           text={text}
           className={className}
         >
