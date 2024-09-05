@@ -47,6 +47,11 @@ export default function Settings({ onClose, randomSwatchCount, setRandomSwatchCo
   };
 
   const handleSave = async () => {
+    if (localSwatchCount === randomSwatchCount && recipient === recipientAddress) {
+      // No changes, skip saving
+      onClose();
+      return;
+    }
     setIsSaving(true);
     if (localSwatchCount > 0) {
       setRandomSwatchCount(localSwatchCount);
