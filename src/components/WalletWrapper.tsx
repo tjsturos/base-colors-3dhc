@@ -24,7 +24,6 @@ type WalletWrapperParams = {
 export default function WalletWrapper({
   className,
   text,
-  withWalletAggregator = false,
 }: WalletWrapperParams) {
   return (
     <>

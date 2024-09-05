@@ -1,5 +1,4 @@
 import React from 'react';
-import { useSettings } from 'src/contexts/SettingsContext';
 import LoadingSpinner from './LoadingSpinner';
 
 interface SearchBarProps {

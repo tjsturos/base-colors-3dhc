@@ -11,12 +11,6 @@ import { useColors } from 'src/contexts/ColorsContext';
 import { base } from 'wagmi/chains';
 import { resolveEnsName } from 'src/utils';
 
-const debugLog = (...args: any[]) => {
-  if (process.env.NEXT_PUBLIC_DEBUG_MODE === 'true') {
-    console.log(...args);
-  }
-};
-
 type TransactionWrapperParams = {
   className?: string;
   onComplete?: () => void;
@@ -24,7 +18,6 @@ type TransactionWrapperParams = {
 
 export default function TransactionWrapper({
   className,
-  onComplete,
 }: TransactionWrapperParams) {
   const { cart, clearCart } = useCart();
   const { isConnected, address: userAddress, chainId: currentChainId } = useAccount();
@@ -153,7 +146,7 @@ export default function TransactionWrapper({
           buttonText
         )}
       </button>
-      {simulateMint && <div className="text-center text-yellow-500">Simulated minting is active</div>}
+      {/* {simulateMint && <div className="text-center text-yellow-500">Simulated minting is active</div>} */}
       {hash && <div className="text-center">Transaction Hash: {hash}</div>}
       {isConfirming && <div className="text-center">Waiting for confirmation...</div>}
       {isConfirmed && <div className="text-center">Transaction confirmed.</div>}

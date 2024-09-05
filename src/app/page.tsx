@@ -3,7 +3,7 @@ import Footer from 'src/components/Footer';
 import { useAccount } from 'wagmi';
 import ColorSwatch from 'src/components/ColorSwatch';
 import TransactionWrapper from 'src/components/TransactionWrapper';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import WalletWrapper from 'src/components/WalletWrapper';
 import SearchBar from 'src/components/SearchBar';
 import Settings from 'src/components/Settings';
@@ -13,6 +13,7 @@ import { Press_Start_2P } from 'next/font/google';
 import SettingsIcon from 'src/components/SettingsIcon';
 import { Color } from 'src/constants';
 import { useColors } from 'src/contexts/ColorsContext';
+import { useCart } from 'src/contexts/CartContext';
 
 const pressStart2P = Press_Start_2P({ 
   weight: '400',
@@ -37,6 +38,7 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const [noSearchResults, setNoSearchResults] = useState(false);
   const [randomColor, setRandomColor] = useState<Color | null>(null);
+  const { cart, addToCart } = useCart();
 
   useEffect(() => {
     // Fetch colors from API
@@ -138,6 +140,10 @@ export default function Page() {
     setIsLoading(false);
   };
 
+  const addAllToCart = useCallback(() => {
+    filteredColors.forEach(color => addToCart(color));
+  }, [filteredColors]);
+
   return (
     <div 
       className="flex h-full w-96 max-w-full flex-col px-1 md:w-[1008px] relative"
@@ -197,6 +203,13 @@ export default function Page() {
           </div>
         ) : (
           <>
+            {isRandomMode && filteredColors.length > 0 && (
+              <div className="mb-4 flex justify-center">
+                <button onClick={addAllToCart} className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+                  Add All to Cart
+                </button>
+              </div>
+            )}
             {noSearchResults && randomColor && (
               <p className="text-gray-600 mb-4 text-center">
                 No search results found. But here's a random color:

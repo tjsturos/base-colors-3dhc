@@ -2,17 +2,24 @@ import React from 'react';
 import { useCart } from 'src/contexts/CartContext';
 import TransactionWrapper from 'src/components/TransactionWrapper';
 import { useAccount } from 'wagmi';
-import WalletWrapper from 'src/components/WalletWrapper';
 
 const MintCart: React.FC = () => {
-  const { cart, removeFromCart } = useCart();
+  const { cart, removeFromCart, clearCart } = useCart();
   const { address } = useAccount();
 
   if (cart.length === 0) return null;
 
+  const handleClearCart = () => {
+    if (window.confirm('Are you sure you want to clear all items from the cart?')) {
+      clearCart();
+    }
+  };
+
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg p-4 md:p-6">
-      <h2 className="text-lg font-bold mb-2">Colors Cart ({cart.length})</h2>
+      <div className="flex items-center mb-2">
+        <h2 className="text-lg font-bold">Checkout ({cart.length} {cart.length === 1 ? 'Color' : 'Colors'})</h2>
+      </div>
       <div className="flex flex-wrap gap-2 mb-4">
         {cart.map((color) => (
           <div
@@ -50,6 +57,16 @@ const MintCart: React.FC = () => {
         >
           Log In
         </button>
+      )}
+      {address && (
+        <div className="flex justify-center mt-2">
+          <button
+            onClick={handleClearCart}
+            className="text-red-500 hover:text-red-700 text-sm font-medium"
+          >
+            Clear All
+          </button>
+        </div>
       )}
     </div>
   );
