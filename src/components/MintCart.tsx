@@ -16,11 +16,15 @@ const MintCart: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg p-4 md:p-6">
-      <div className="flex items-center mb-2">
-        <h2 className="text-lg font-bold">Checkout ({cart.length} {cart.length === 1 ? 'Color' : 'Colors'})</h2>
+    <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg shadow-t-lg p-4 pb-3 pt-2 md:p-6">
+      <div className="flex justify-center mb-1">
+        <h2 className="text-lg font-bold relative">
+          Checkout ({cart.length} {cart.length === 1 ? 'Color' : 'Colors'})
+        
+        </h2>
       </div>
-      <div className="flex flex-wrap gap-2 mb-4">
+        <div className="w-full h-px bg-gray-200 mb-3"></div>
+      <div className="flex flex-wrap justify-center gap-2 mb-2">
         {cart.map((color) => (
           <div
             key={color.hexCode}
@@ -43,6 +47,7 @@ const MintCart: React.FC = () => {
           </div>
         ))}
       </div>
+      <div className="w-full h-px bg-gray-200 mb-3"></div>
       {address ? (
         <TransactionWrapper
           className="w-full"
