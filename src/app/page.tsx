@@ -234,7 +234,7 @@ export default function Page() {
             )}
             {showingClosestColors && (
               <p className="text-gray-600 mb-4 text-center">
-                No exact match was found, displaying the <a href="https://en.wikipedia.org/wiki/Color_difference" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">closest</a> colors:
+                No exact match was found, displaying the <a href="https://en.wikipedia.org/wiki/Color_difference" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">closest</a> 3DHC Base Colors:
               </p>
             )}
             <div className={`w-full ${(noSearchResults && randomColor) || filteredColors.length === 1 ? 'flex justify-center' : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6'}`}>
