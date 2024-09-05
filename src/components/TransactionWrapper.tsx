@@ -114,7 +114,7 @@ export default function TransactionWrapper({
         abi,
         address,
         functionName: cart.length > 1 ? 'mintBatch' : 'mint',
-        args: cart.length > 1 ? [colors, names, 1, mintToAddress] : [colors[0], names[0], mintToAddress],
+        args: cart.length > 1 ? [colors, names, cart.length, mintToAddress] : [colors[0], names[0], mintToAddress],
         value,
         chainId: BASE_MAINNET_CHAIN_ID
       });
