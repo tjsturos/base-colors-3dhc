@@ -14,6 +14,7 @@ import SettingsIcon from 'src/components/SettingsIcon';
 import { Color } from 'src/constants';
 import { useColors } from 'src/contexts/ColorsContext';
 import { useCart } from 'src/contexts/CartContext';
+import { getClosest3DigitHex, isHexCode } from 'src/utils';
 
 const pressStart2P = Press_Start_2P({ 
   weight: '400',
@@ -38,6 +39,7 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const [noSearchResults, setNoSearchResults] = useState(false);
   const [randomColor, setRandomColor] = useState<Color | null>(null);
+  const [showingClosestColors, setShowingClosestColors] = useState(false);
   const { cart, addToCart } = useCart();
 
   useEffect(() => {
@@ -66,9 +68,17 @@ export default function Page() {
         color.hexCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
         color.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
-      setFilteredColors(filtered);
-      setNoSearchResults(filtered.length === 0);
-      
+
+      if (filtered.length === 0 && isHexCode(searchTerm)) {
+        const closestColors = getClosest3DigitHex(searchTerm, colors);
+        setFilteredColors(closestColors);
+        setNoSearchResults(closestColors.length === 0);
+        setShowingClosestColors(closestColors.length !== 0);
+      } else {
+        setFilteredColors(filtered);
+        setNoSearchResults(filtered.length === 0);
+      }
+
       // If no results, set a random color
       if (filtered.length === 0 && colors.length > 0) {
         setRandomColor(colors[Math.floor(Math.random() * colors.length)]);
@@ -105,16 +115,22 @@ export default function Page() {
     setIsModalOpen(false);
   };
 
-  const handleRandomColor = useCallback(() => {
+  const handleRandomColor = () => {
+    setIsLoading(true);
     setIsLoadingRandom(true);
     setFilteredColors([]);
     setSearchTerm('');
-  }, []);
+    setIsLoading(false);
+  };
 
   const handleClearRandom = () => {
+    console.log('handleClearRandom', isLoading);
+    setIsLoading(true);
+    console.log('handleClearRandom', isLoading);
     setFilteredColors(colors);
     setIsRandomMode(false);
     setSearchTerm('');
+    setIsLoading(false);
   };
 
   const openSettings = () => {
@@ -195,6 +211,7 @@ export default function Page() {
           onClearSearch={handleClearSearch}
           isLoading={isLoading}
           noSearchResults={noSearchResults}
+          setIsLoading={setIsLoading}
         />
         
         {isLoading || !isLoadingComplete ? (
@@ -213,6 +230,11 @@ export default function Page() {
             {noSearchResults && randomColor && (
               <p className="text-gray-600 mb-4 text-center">
                 No search results found. But here's a random color:
+              </p>
+            )}
+            {showingClosestColors && (
+              <p className="text-gray-600 mb-4 text-center">
+                No exact match was found, displaying the <a href="https://en.wikipedia.org/wiki/Color_difference" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">closest</a> colors:
               </p>
             )}
             <div className={`w-full ${(noSearchResults && randomColor) || filteredColors.length === 1 ? 'flex justify-center' : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6'}`}>

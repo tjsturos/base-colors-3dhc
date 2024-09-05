@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import LoadingSpinner from './LoadingSpinner';
+import { getSillySaying } from 'src/utils';
 
 interface SearchBarProps {
   searchTerm: string;
@@ -12,6 +13,7 @@ interface SearchBarProps {
   onClearSearch: () => Promise<void>;
   isLoading: boolean;
   noSearchResults: boolean;
+  setIsLoading: (isLoading: boolean) => void;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
@@ -24,11 +26,22 @@ const SearchBar: React.FC<SearchBarProps> = ({
   onUpdateQuantity,
   onClearSearch,
   isLoading,
+  setIsLoading,
   noSearchResults,
 }) => {
-
+  const [randomSaying, setRandomSaying] = useState(getSillySaying());
   const handleClearSearch = async () => {
+    setIsLoading(true);
     await onClearSearch();
+    await onClearRandom();
+    setIsLoading(false);
+  };
+
+  const handleRandomClick = () => {
+    setIsLoading(true);
+    setRandomSaying(getSillySaying());
+    onRandomClick();
+    setIsLoading(false);
   };
 
   return (
@@ -43,16 +56,16 @@ const SearchBar: React.FC<SearchBarProps> = ({
         />
         <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-2">
           <button
-            onClick={isRandomMode ? onClearRandom : onRandomClick}
+            onClick={handleRandomClick}
             className="text-blue-500 hover:text-blue-700 px-2 py-1 text-sm"
           >
-            {isRandomMode ? "Clear Random" : "Random"}
+            {isRandomMode ? randomSaying : "Random"}
           </button>
           <button
             onClick={handleClearSearch}
-            disabled={!searchTerm || isLoading} // Use isLoading to disable the button
+            disabled={(!searchTerm && !isRandomMode) || isLoading} // Disable only if there's no search term, not in random mode, and it's loading
             className={`px-2 py-1 text-sm ${
-              searchTerm && !isLoading // Use isLoading to determine button color
+              (searchTerm || isRandomMode) && !isLoading // Use isLoading to determine button color
                 ? 'text-red-500 hover:text-red-700'
                 : 'text-gray-300 cursor-not-allowed'
             }`}
