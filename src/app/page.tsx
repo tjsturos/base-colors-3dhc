@@ -20,8 +20,6 @@ const pressStart2P = Press_Start_2P({
   display: 'swap',
 });
 
-
-
 export default function Page() {
   const { address } = useAccount();
   const { recipientAddress, clearRecipientAddress, randomSwatchCount, setRandomSwatchCount } = useSettings();
