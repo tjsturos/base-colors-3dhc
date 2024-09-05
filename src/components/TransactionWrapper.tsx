@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useSwitchChain } from 'wagmi';
 import { parseEther } from 'viem';
 import type { Address, BaseError } from 'viem';
-import { abi, baseColorsAddress as address, BASE_MAINNET_CHAIN_ID } from 'src/constants';
+import { abi, baseColorsAddress as address, BASE_MAINNET_CHAIN_ID, Color } from 'src/constants';
 import { useCart } from 'src/contexts/CartContext';
 import { useSettings } from 'src/contexts/SettingsContext';
 import LoadingSpinner from './LoadingSpinner';
@@ -28,11 +28,12 @@ export default function TransactionWrapper({
   const { cart, clearCart } = useCart();
   const { isConnected, address: userAddress, chainId: currentChainId } = useAccount();
   const { recipientAddress } = useSettings();
-  const { removeColors } = useColors();
+  const { removeColors, removeColor } = useColors();
   const [mintToAddress, setMintToAddress] = useState<Address | undefined>(recipientAddress || userAddress);
   const [isWrongChain, setIsWrongChain] = useState(false);
 
   const { switchChain } = useSwitchChain();
+  const simulateMint = process.env.NEXT_PUBLIC_SIMULATE_MINT === 'true';
 
   useEffect(() => {
     setIsWrongChain(currentChainId !== BASE_MAINNET_CHAIN_ID);
@@ -53,19 +54,39 @@ export default function TransactionWrapper({
 
   useEffect(() => {
     if (isConfirmed) {
-      removeColors(cart.map(color => color.hexCode));
-      clearCart();
-      if (onComplete) {
-        onComplete();
-      }
+      handleTransactionConfirmed(cart);
     }
-  }, [isConfirmed, clearCart, onComplete, removeColors, cart]);
+  }, [isConfirmed]);
 
   const handleSwitchChain = async () => {
     try {
       await switchChain({ chainId: BASE_MAINNET_CHAIN_ID });
     } catch (error) {
       console.error('Failed to switch chain:', error);
+    }
+  };
+
+  const handleTransactionConfirmed = async (colors: Color[]) => {
+    // Remove color from the context
+    removeColors(colors);
+
+    // Call the API to remove the color from the CSV file
+    try {
+      const response = await fetch('/api/removeColors', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ colors }),
+      });
+
+      if (response.ok) {
+        clearCart()
+      } else {
+        console.error('Failed to remove color from server');
+      }
+    } catch (error) {
+      console.error('Error removing color:', error);
     }
   };
 
@@ -81,14 +102,23 @@ export default function TransactionWrapper({
     const colors = cart.length > 1 ? cart.map(item => item.hexCode) : [cart[0]?.hexCode];
     const names = cart.length > 1 ? cart.map(item => item.name.substring(1)) : [cart[0]?.name.substring(1)];
 
-    writeContract({
-      abi,
-      address,
-      functionName: cart.length > 1 ? 'mintBatch' : 'mint',
-      args: cart.length > 1 ? [colors, names, 1, mintToAddress] : [colors[0], names[0], mintToAddress],
-      value,
-      chainId: BASE_MAINNET_CHAIN_ID
-    });
+    if (simulateMint) {
+      // Simulate minting process
+      setTimeout(() => {
+        handleTransactionConfirmed(cart)
+      }, 2000); // Simulate a 2-second minting process
+    } else {
+      // Actual minting
+
+      writeContract({
+        abi,
+        address,
+        functionName: cart.length > 1 ? 'mintBatch' : 'mint',
+        args: cart.length > 1 ? [colors, names, 1, mintToAddress] : [colors[0], names[0], mintToAddress],
+        value,
+        chainId: BASE_MAINNET_CHAIN_ID
+      });
+    }
   };
 
   if (!isConnected) {
@@ -116,6 +146,7 @@ export default function TransactionWrapper({
           buttonText
         )}
       </button>
+      {simulateMint && <div className="text-center text-yellow-500">Simulated minting is active</div>}
       {hash && <div className="text-center">Transaction Hash: {hash}</div>}
       {isConfirming && <div className="text-center">Waiting for confirmation...</div>}
       {isConfirmed && <div className="text-center">Transaction confirmed.</div>}

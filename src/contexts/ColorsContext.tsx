@@ -5,7 +5,8 @@ import { Color } from 'src/constants';
 type ColorsContextType = {
   colors: Color[];
   setColors: React.Dispatch<React.SetStateAction<Color[]>>;
-  removeColors: (hexCodes: string[]) => void;
+  removeColors: (colorsToRemove: Color[]) => void;
+  removeColor: (colorToRemove: Color) => void;
 };
 
 const ColorsContext = createContext<ColorsContextType | undefined>(undefined);
@@ -13,12 +14,18 @@ const ColorsContext = createContext<ColorsContextType | undefined>(undefined);
 export const ColorsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [colors, setColors] = useState<Color[]>([]);
 
-  const removeColors = useCallback((hexCodes: string[]) => {
-    setColors(prevColors => prevColors.filter(color => !hexCodes.includes(color.hexCode)));
-  }, []);
+  const removeColors = (colorsToRemove: Color[]) => {
+    colorsToRemove.forEach(color => {
+      removeColor(color);
+    });
+  };
+
+  const removeColor = (colorToRemove: Color) => {
+    setColors((colors: Color[]) => colors.filter(color => color !== colorToRemove));
+  };
 
   return (
-    <ColorsContext.Provider value={{ colors, setColors, removeColors }}>
+    <ColorsContext.Provider value={{ colors, setColors, removeColors, removeColor }}>
       {children}
     </ColorsContext.Provider>
   );

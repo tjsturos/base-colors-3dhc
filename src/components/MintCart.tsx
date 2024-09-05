@@ -44,7 +44,7 @@ const MintCart: React.FC = () => {
         <button
           onClick={() => {
             console.log('Log In button clicked');
-            (document.querySelector('button[data-testid="connect-wallet-button"]') as HTMLButtonElement)?.click();
+            (document.querySelector('button[data-testid="ockConnectButton"]') as HTMLButtonElement)?.click();
           }}
           className="w-full bg-blue-500 text-white py-2 px-4 rounded"
         >

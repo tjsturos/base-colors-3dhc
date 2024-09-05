@@ -12,6 +12,7 @@ import LoadingSpinner from 'src/components/LoadingSpinner';
 import { Press_Start_2P } from 'next/font/google';
 import SettingsIcon from 'src/components/SettingsIcon';
 import { Color } from 'src/constants';
+import { useColors } from 'src/contexts/ColorsContext';
 
 const pressStart2P = Press_Start_2P({ 
   weight: '400',
@@ -24,7 +25,7 @@ const pressStart2P = Press_Start_2P({
 export default function Page() {
   const { address } = useAccount();
   const { recipientAddress, clearRecipientAddress, randomSwatchCount, setRandomSwatchCount } = useSettings();
-  const [colors, setColors] = useState<Color[]>([]);
+  const { colors, setColors } = useColors();
   const [filteredColors, setFilteredColors] = useState<Color[]>([]);
   const [selectedColor, setSelectedColor] = useState<Color | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);

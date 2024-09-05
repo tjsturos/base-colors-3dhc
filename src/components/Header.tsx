@@ -32,7 +32,6 @@ export default function Header() {
             </>
           ) : (
             <>
-              <SignupButton />
               <LoginButton />
             </>
           )}
